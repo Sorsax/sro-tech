@@ -12,7 +12,9 @@ interface EventCardProps {
 const EventCard = ({ date, event, volunteers, backup, notes }: EventCardProps) => {
   const formatDate = (dateStr: string) => {
     try {
-      const [day, month, year] = dateStr.split('/');
+      // Handle both dot and slash formats: "5.1.2025" or "5/1/2025"
+      const parts = dateStr.includes('.') ? dateStr.split('.') : dateStr.split('/');
+      const [day, month, year] = parts;
       const date = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
       return {
         dayName: date.toLocaleDateString('fi-FI', { weekday: 'short' }),
