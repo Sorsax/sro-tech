@@ -18,16 +18,18 @@ const ScheduleView = () => {
 
   // Google Sheets configuration
   const SHEET_ID = '1iZfopLSu7IxqF-15TYT21xEfvX_Q1-Z1OX8kzagGrDg';
-  const SHEET_NAME = 'Sheet1'; // You might need to adjust this based on your sheet name
-  const API_KEY = 'YOUR_GOOGLE_SHEETS_API_KEY'; // This should be set by the user
-
+  
   const fetchGoogleSheetData = async () => {
     try {
       console.log('Fetching data from Google Sheets...');
       
-      // For now, we'll use the public CSV export URL as a fallback
-      // In production, you'd want to use the Google Sheets API with proper authentication
-      const csvUrl = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=0`;
+      // Get current year for sheet name
+      const currentYear = new Date().getFullYear().toString();
+      console.log('Fetching data from sheet:', currentYear);
+      
+      // Get the sheet ID for the current year sheet
+      // We'll try to get the sheet by name using the export URL with the sheet name
+      const csvUrl = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${currentYear}`;
       
       const response = await fetch(csvUrl);
       if (!response.ok) {
@@ -41,12 +43,12 @@ const ScheduleView = () => {
       const lines = csvText.split('\n');
       const data: ScheduleItem[] = [];
       
-      // Skip header row (index 0) and process data rows
-      for (let i = 1; i < lines.length; i++) {
+      // Skip first 2 rows (index 0 and 1) and process data rows starting from row 3 (index 2)
+      for (let i = 2; i < lines.length; i++) {
         const line = lines[i].trim();
         if (line) {
-          // Simple CSV parsing - in production you'd want a more robust parser
-          const columns = line.split(',').map(col => col.replace(/"/g, '').trim());
+          // Simple CSV parsing - handle quoted fields
+          const columns = line.split(',').map(col => col.replace(/^"|"$/g, '').trim());
           
           if (columns.length >= 5 && columns[0]) {
             data.push({
