@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import EventCard from './EventCard';
-import { RefreshCw, Wifi } from 'lucide-react';
+import { RefreshCw, Wifi, Calendar } from 'lucide-react';
 
 interface ScheduleItem {
   date: string;
@@ -16,56 +16,68 @@ const ScheduleView = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Mock data for demonstration (in real app, this would fetch from Google Sheets API)
-  const mockData: ScheduleItem[] = [
-    {
-      date: "15/1/2025",
-      event: "Aamupalvelus - Äänitekniikka",
-      volunteers: "Mikael L., Anna K.",
-      backup: "Jukka M.",
-      notes: "Tarkista mikrofonien toiminta etukäteen"
-    },
-    {
-      date: "16/1/2025",
-      event: "Keskiviikon raamattupiiri - Videotekniikka",
-      volunteers: "Sofia H., Petri N.",
-      backup: "Lisa A.",
-      notes: "Uusi projektori käytössä"
-    },
-    {
-      date: "19/1/2025",
-      event: "Sunnuntaipalvelus - Täysi tekninen tuki",
-      volunteers: "Mikael L., Anna K., Sofia H.",
-      backup: "Jukka M.",
-      notes: "Erikoiskonsertti - tarvitaan lisämikrofoneja"
-    },
-    {
-      date: "22/1/2025",
-      event: "Nuortenilta - Äänitekniikka",
-      volunteers: "Petri N., Lisa A.",
-      backup: "Anna K.",
-      notes: "Bändin oma mikseri käytössä"
-    },
-    {
-      date: "26/1/2025",
-      event: "Sunnuntaipalvelus - Videotekniikka",
-      volunteers: "Sofia H., Jukka M.",
-      backup: "Mikael L.",
-      notes: "Livestream Facebook-sivulle"
+  // Google Sheets configuration
+  const SHEET_ID = '1iZfopLSu7IxqF-15TYT21xEfvX_Q1-Z1OX8kzagGrDg';
+  const SHEET_NAME = 'Sheet1'; // You might need to adjust this based on your sheet name
+  const API_KEY = 'YOUR_GOOGLE_SHEETS_API_KEY'; // This should be set by the user
+
+  const fetchGoogleSheetData = async () => {
+    try {
+      console.log('Fetching data from Google Sheets...');
+      
+      // For now, we'll use the public CSV export URL as a fallback
+      // In production, you'd want to use the Google Sheets API with proper authentication
+      const csvUrl = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=0`;
+      
+      const response = await fetch(csvUrl);
+      if (!response.ok) {
+        throw new Error('Failed to fetch sheet data');
+      }
+      
+      const csvText = await response.text();
+      console.log('CSV data received:', csvText);
+      
+      // Parse CSV data
+      const lines = csvText.split('\n');
+      const data: ScheduleItem[] = [];
+      
+      // Skip header row (index 0) and process data rows
+      for (let i = 1; i < lines.length; i++) {
+        const line = lines[i].trim();
+        if (line) {
+          // Simple CSV parsing - in production you'd want a more robust parser
+          const columns = line.split(',').map(col => col.replace(/"/g, '').trim());
+          
+          if (columns.length >= 5 && columns[0]) {
+            data.push({
+              date: columns[0] || '',
+              event: columns[1] || '',
+              volunteers: columns[2] || '',
+              backup: columns[3] || '',
+              notes: columns[4] || ''
+            });
+          }
+        }
+      }
+      
+      console.log('Parsed data:', data);
+      return data;
+    } catch (error) {
+      console.error('Error fetching Google Sheets data:', error);
+      throw error;
     }
-  ];
+  };
 
   useEffect(() => {
-    // Simulate loading from Google Sheets
     const loadData = async () => {
       setLoading(true);
       try {
-        // In a real app, you would fetch from Google Sheets API here
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        setScheduleData(mockData);
+        const data = await fetchGoogleSheetData();
+        setScheduleData(data);
         setError(null);
       } catch (err) {
-        setError('Virhe ladattaessa aikataulua');
+        console.error('Error loading data:', err);
+        setError('Virhe ladattaessa aikataulua Google Sheetsistä');
       } finally {
         setLoading(false);
       }
@@ -74,14 +86,19 @@ const ScheduleView = () => {
     loadData();
   }, []);
 
-  const refreshData = () => {
+  const refreshData = async () => {
     setScheduleData([]);
     setLoading(true);
-    // Simulate refresh
-    setTimeout(() => {
-      setScheduleData(mockData);
+    try {
+      const data = await fetchGoogleSheetData();
+      setScheduleData(data);
+      setError(null);
+    } catch (err) {
+      console.error('Error refreshing data:', err);
+      setError('Virhe ladattaessa aikataulua Google Sheetsistä');
+    } finally {
       setLoading(false);
-    }, 1000);
+    }
   };
 
   if (loading) {
@@ -89,7 +106,7 @@ const ScheduleView = () => {
       <div className="px-4 py-8">
         <div className="text-center">
           <RefreshCw className="h-8 w-8 text-sro-olive mx-auto mb-4 animate-spin" />
-          <p className="text-gray-600">Ladataan aikataulua...</p>
+          <p className="text-gray-600">Ladataan aikataulua Google Sheetsistä...</p>
         </div>
       </div>
     );
