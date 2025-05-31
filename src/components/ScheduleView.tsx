@@ -19,6 +19,28 @@ const ScheduleView = () => {
   // Google Sheets configuration
   const SHEET_ID = '1iZfopLSu7IxqF-15TYT21xEfvX_Q1-Z1OX8kzagGrDg';
   
+  const parseCSVLine = (line: string): string[] => {
+    const result: string[] = [];
+    let current = '';
+    let inQuotes = false;
+    
+    for (let i = 0; i < line.length; i++) {
+      const char = line[i];
+      
+      if (char === '"') {
+        inQuotes = !inQuotes;
+      } else if (char === ',' && !inQuotes) {
+        result.push(current.trim());
+        current = '';
+      } else {
+        current += char;
+      }
+    }
+    
+    result.push(current.trim());
+    return result;
+  };
+  
   const fetchGoogleSheetData = async () => {
     try {
       console.log('Fetching data from Google Sheets...');
@@ -47,8 +69,8 @@ const ScheduleView = () => {
       for (let i = 2; i < lines.length; i++) {
         const line = lines[i].trim();
         if (line) {
-          // Simple CSV parsing - handle quoted fields
-          const columns = line.split(',').map(col => col.replace(/^"|"$/g, '').trim());
+          // Use proper CSV parsing to handle quoted fields with commas
+          const columns = parseCSVLine(line);
           
           if (columns.length >= 5 && columns[0]) {
             data.push({
