@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from 'react';
-import { RefreshCw, Wifi, Phone, Mail, User } from 'lucide-react';
+import { Users, Phone, Mail, RefreshCw, Wifi } from 'lucide-react';
 
 interface Contact {
   name: string;
@@ -40,7 +40,7 @@ const ContactsView = () => {
   
   const fetchContactsData = async () => {
     try {
-      console.log('Fetching contacts from Google Sheets...');
+      console.log('Fetching contacts from Google Sheets');
       
       const csvUrl = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=YHTEYSTIEDOT`;
       
@@ -118,7 +118,7 @@ const ContactsView = () => {
       <div className="px-4 py-8">
         <div className="text-center">
           <RefreshCw className="h-8 w-8 text-sro-olive mx-auto mb-4 animate-spin" />
-          <p className="text-gray-600">Ladataan yhteystietoja Google Sheetsistä...</p>
+          <p className="text-gray-600 dark:text-gray-300">Ladataan yhteystietoja...</p>
         </div>
       </div>
     );
@@ -129,7 +129,7 @@ const ContactsView = () => {
       <div className="px-4 py-8">
         <div className="text-center">
           <Wifi className="h-8 w-8 text-red-500 mx-auto mb-4" />
-          <p className="text-red-600 mb-4">{error}</p>
+          <p className="text-red-600 dark:text-red-400 mb-4">{error}</p>
           <button 
             onClick={refreshData}
             className="bg-sro-olive text-white px-4 py-2 rounded-lg hover:bg-sro-olive/90 transition-colors"
@@ -145,8 +145,8 @@ const ContactsView = () => {
     <div className="px-4 py-6">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h2 className="text-xl font-bree font-bold text-sro-granite">Yhteystiedot</h2>
-          <p className="text-sm text-gray-600">Vapaaehtoisten yhteystiedot</p>
+          <h2 className="text-xl font-bree font-bold text-sro-granite dark:text-white">Vapaaehtoiset</h2>
+          <p className="text-sm text-gray-600 dark:text-gray-400">SRO Tech tiimin yhteystiedot</p>
         </div>
         <button 
           onClick={refreshData}
@@ -158,13 +158,18 @@ const ContactsView = () => {
 
       <div className="space-y-4">
         {contacts.map((contact, index) => (
-          <div key={index} className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 hover:shadow-md transition-shadow">
+          <div 
+            key={index}
+            className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4 animate-fade-in hover:shadow-md transition-shadow"
+          >
             <div className="flex items-center mb-3">
-              <div className="bg-sro-olive text-white rounded-lg p-3 mr-4">
-                <User className="h-6 w-6" />
+              <div className="bg-sro-olive/10 p-3 rounded-lg mr-4">
+                <Users className="h-6 w-6 text-sro-olive" />
               </div>
               <div className="flex-1">
-                <h3 className="text-lg font-semibold text-sro-granite">{contact.name}</h3>
+                <h3 className="text-lg font-semibold text-sro-granite dark:text-white">
+                  {contact.name}
+                </h3>
               </div>
             </div>
 
@@ -174,7 +179,7 @@ const ContactsView = () => {
                   <Phone className="h-4 w-4 text-sro-olive flex-shrink-0" />
                   <a 
                     href={`tel:${contact.phone}`}
-                    className="text-sm text-gray-600 hover:text-sro-olive transition-colors"
+                    className="text-sm text-gray-600 dark:text-gray-300 hover:text-sro-olive transition-colors"
                   >
                     {contact.phone}
                   </a>
@@ -186,7 +191,7 @@ const ContactsView = () => {
                   <Mail className="h-4 w-4 text-sro-olive flex-shrink-0" />
                   <a 
                     href={`mailto:${contact.email}`}
-                    className="text-sm text-gray-600 hover:text-sro-olive transition-colors"
+                    className="text-sm text-gray-600 dark:text-gray-300 hover:text-sro-olive transition-colors"
                   >
                     {contact.email}
                   </a>
@@ -199,8 +204,8 @@ const ContactsView = () => {
 
       {contacts.length === 0 && !loading && (
         <div className="text-center py-12">
-          <User className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-          <p className="text-gray-500">Ei yhteystietoja saatavilla</p>
+          <Users className="h-12 w-12 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
+          <p className="text-gray-500 dark:text-gray-400">Ei yhteystietoja saatavilla</p>
         </div>
       )}
     </div>
