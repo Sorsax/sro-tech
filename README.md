@@ -14,8 +14,8 @@ Iljapuolella käytössä ovat:
 
 ## Sovelluksen ulkoasu
 
-Typography:
-Vaikka eihän se esittelyä kaipaisi
+Typography,
+Vaikka eihän se esittelyä kaipaisi:
 
 - Otsikoissa Bree Serif – tuttuun tapaan
 - Muussa tekstissä Open Sans – luettavaa ja modernia
