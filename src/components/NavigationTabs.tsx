@@ -1,6 +1,5 @@
 
 import { Calendar, Settings, Users } from 'lucide-react';
-import { useState } from 'react';
 
 interface NavigationTabsProps {
   activeTab: string;
@@ -15,7 +14,7 @@ const NavigationTabs = ({ activeTab, onTabChange }: NavigationTabsProps) => {
   ];
 
   return (
-    <div className="bg-white border-t border-gray-200 px-4 py-2">
+    <div className="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 px-4 py-2">
       <div className="flex justify-around">
         {tabs.map((tab) => {
           const Icon = tab.icon;
@@ -28,7 +27,7 @@ const NavigationTabs = ({ activeTab, onTabChange }: NavigationTabsProps) => {
               className={`flex flex-col items-center py-2 px-3 rounded-lg transition-colors ${
                 isActive 
                   ? 'text-sro-olive bg-sro-olive/10' 
-                  : 'text-gray-500 hover:text-sro-olive hover:bg-gray-50'
+                  : 'text-gray-500 dark:text-gray-400 hover:text-sro-olive hover:bg-gray-50 dark:hover:bg-gray-700'
               }`}
             >
               <Icon className="h-5 w-5 mb-1" />
