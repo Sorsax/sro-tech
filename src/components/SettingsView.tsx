@@ -52,6 +52,7 @@ const SettingsView = () => {
             <Switch
               checked={isDarkMode}
               onCheckedChange={toggleDarkMode}
+              className="data-[state=checked]:bg-sro-olive"
             />
           </div>
         </div>
@@ -77,7 +78,7 @@ const SettingsView = () => {
                 onKeyPress={handleNameKeyPress}
                 onBlur={handleNameSave}
                 placeholder="Syötä etunimesi"
-                className="flex-1"
+                className="flex-1 focus:ring-sro-olive focus:border-sro-olive"
               />
             </div>
             {userName && (
