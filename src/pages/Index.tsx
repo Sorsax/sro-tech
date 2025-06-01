@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import Header from '../components/Header';
 import ScheduleView from '../components/ScheduleView';
+import ContactsView from '../components/ContactsView';
 import NavigationTabs from '../components/NavigationTabs';
 import { Users, Settings } from 'lucide-react';
 
@@ -13,13 +14,7 @@ const Index = () => {
       case 'schedule':
         return <ScheduleView />;
       case 'volunteers':
-        return (
-          <div className="px-4 py-8 text-center">
-            <Users className="h-12 w-12 text-sro-olive mx-auto mb-4" />
-            <h2 className="text-xl font-bree font-bold text-sro-granite mb-2">Vapaaehtoiset</h2>
-            <p className="text-gray-600">Vapaaehtoiset ja yhteystiedot tulossa pian</p>
-          </div>
-        );
+        return <ContactsView />;
       case 'settings':
         return (
           <div className="px-4 py-8 text-center">
