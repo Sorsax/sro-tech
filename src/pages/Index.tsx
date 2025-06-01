@@ -37,11 +37,13 @@ const Index = () => {
     <div className="min-h-screen bg-sro-gray flex flex-col max-w-md mx-auto border-x border-gray-200">
       <Header />
       
-      <main className="flex-1 overflow-y-auto">
+      <main className="flex-1 overflow-y-auto pb-20">
         {renderContent()}
       </main>
       
-      <NavigationTabs activeTab={activeTab} onTabChange={setActiveTab} />
+      <div className="fixed bottom-0 left-1/2 transform -translate-x-1/2 w-full max-w-md">
+        <NavigationTabs activeTab={activeTab} onTabChange={setActiveTab} />
+      </div>
     </div>
   );
 };
