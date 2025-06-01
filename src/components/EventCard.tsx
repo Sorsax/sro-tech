@@ -1,5 +1,8 @@
 
-import { Calendar, Users, UserCheck, StickyNote } from 'lucide-react';
+import { Calendar, Users, UserCheck, StickyNote, UserPlus } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { useSettings } from '@/contexts/SettingsContext';
+import { useState } from 'react';
 
 interface EventCardProps {
   date: string;
@@ -7,9 +10,13 @@ interface EventCardProps {
   volunteers: string;
   backup: string;
   notes: string;
+  onOptIn?: (date: string, name: string) => void;
 }
 
-const EventCard = ({ date, event, volunteers, backup, notes }: EventCardProps) => {
+const EventCard = ({ date, event, volunteers, backup, notes, onOptIn }: EventCardProps) => {
+  const { userName } = useSettings();
+  const [isOptingIn, setIsOptingIn] = useState(false);
+
   const formatDate = (dateStr: string) => {
     try {
       // Handle both dot and slash formats: "5.1.2025" or "5/1/2025"
@@ -26,10 +33,44 @@ const EventCard = ({ date, event, volunteers, backup, notes }: EventCardProps) =
     }
   };
 
+  const isEventInFuture = (dateStr: string): boolean => {
+    try {
+      const parts = dateStr.includes('.') ? dateStr.split('.') : dateStr.split('/');
+      const [day, month, year] = parts;
+      const eventDate = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      return eventDate >= today;
+    } catch {
+      return true;
+    }
+  };
+
+  const handleOptIn = async () => {
+    if (!userName.trim()) {
+      alert('Aseta ensin nimesi asetuksista ennen ilmoittautumista!');
+      return;
+    }
+
+    setIsOptingIn(true);
+    try {
+      if (onOptIn) {
+        await onOptIn(date, userName);
+      }
+    } catch (error) {
+      console.error('Error opting in:', error);
+      alert('Ilmoittautumisessa tapahtui virhe. Yritä uudelleen.');
+    } finally {
+      setIsOptingIn(false);
+    }
+  };
+
   const formattedDate = formatDate(date);
+  const isFutureEvent = isEventInFuture(date);
+  const isUserAlreadyVolunteering = volunteers.toLowerCase().includes(userName.toLowerCase()) && userName.trim() !== '';
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 mb-4 animate-fade-in hover:shadow-md transition-shadow">
+    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4 mb-4 animate-fade-in hover:shadow-md transition-shadow">
       {/* Date Section */}
       <div className="flex items-center mb-3">
         <div className="bg-sro-olive text-white rounded-lg p-3 mr-4 min-w-[60px] text-center">
@@ -38,10 +79,10 @@ const EventCard = ({ date, event, volunteers, backup, notes }: EventCardProps) =
           <div className="text-xs uppercase">{formattedDate.month}</div>
         </div>
         <div className="flex-1">
-          <h3 className="text-lg font-semibold text-sro-granite mb-1 leading-tight">
+          <h3 className="text-lg font-semibold text-sro-granite dark:text-white mb-1 leading-tight">
             {event}
           </h3>
-          <div className="flex items-center text-sm text-gray-500">
+          <div className="flex items-center text-sm text-gray-500 dark:text-gray-400">
             <Calendar className="h-4 w-4 mr-1" />
             {date}
           </div>
@@ -54,8 +95,8 @@ const EventCard = ({ date, event, volunteers, backup, notes }: EventCardProps) =
           <div className="flex items-start space-x-3">
             <Users className="h-4 w-4 text-sro-olive mt-0.5 flex-shrink-0" />
             <div>
-              <div className="text-sm font-medium text-sro-granite">Vapaaehtoiset</div>
-              <div className="text-sm text-gray-600">{volunteers}</div>
+              <div className="text-sm font-medium text-sro-granite dark:text-white">Vapaaehtoiset</div>
+              <div className="text-sm text-gray-600 dark:text-gray-300">{volunteers}</div>
             </div>
           </div>
         )}
@@ -64,8 +105,8 @@ const EventCard = ({ date, event, volunteers, backup, notes }: EventCardProps) =
           <div className="flex items-start space-x-3">
             <UserCheck className="h-4 w-4 text-sro-olive mt-0.5 flex-shrink-0" />
             <div>
-              <div className="text-sm font-medium text-sro-granite">Varahenkilö</div>
-              <div className="text-sm text-gray-600">{backup}</div>
+              <div className="text-sm font-medium text-sro-granite dark:text-white">Varahenkilö</div>
+              <div className="text-sm text-gray-600 dark:text-gray-300">{backup}</div>
             </div>
           </div>
         )}
@@ -74,8 +115,31 @@ const EventCard = ({ date, event, volunteers, backup, notes }: EventCardProps) =
           <div className="flex items-start space-x-3">
             <StickyNote className="h-4 w-4 text-sro-olive mt-0.5 flex-shrink-0" />
             <div>
-              <div className="text-sm font-medium text-sro-granite">Lisätiedot</div>
-              <div className="text-sm text-gray-600">{notes}</div>
+              <div className="text-sm font-medium text-sro-granite dark:text-white">Lisätiedot</div>
+              <div className="text-sm text-gray-600 dark:text-gray-300">{notes}</div>
+            </div>
+          </div>
+        )}
+
+        {/* Opt-in Button for Future Events */}
+        {isFutureEvent && userName.trim() && !isUserAlreadyVolunteering && (
+          <div className="pt-2 border-t border-gray-100 dark:border-gray-600">
+            <Button 
+              onClick={handleOptIn}
+              disabled={isOptingIn}
+              size="sm"
+              className="bg-sro-olive hover:bg-sro-olive/90 text-white"
+            >
+              <UserPlus className="h-4 w-4 mr-2" />
+              {isOptingIn ? 'Ilmoittaudutaan...' : 'Ilmoittaudu vapaaehtoiseksi'}
+            </Button>
+          </div>
+        )}
+
+        {isUserAlreadyVolunteering && (
+          <div className="pt-2 border-t border-gray-100 dark:border-gray-600">
+            <div className="text-sm text-sro-olive font-medium">
+              ✓ Olet jo ilmoittautunut tähän tapahtumaan
             </div>
           </div>
         )}

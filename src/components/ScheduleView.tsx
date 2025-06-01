@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import EventCard from './EventCard';
 import { RefreshCw, Wifi, Calendar, Clock, History, ChevronDown } from 'lucide-react';
@@ -90,6 +91,36 @@ const ScheduleView = () => {
     }
   };
 
+  const handleOptIn = async (eventDate: string, userName: string) => {
+    try {
+      console.log(`Attempting to opt in ${userName} for event on ${eventDate}`);
+      
+      // Find the event in current data
+      const eventIndex = scheduleData.findIndex(item => item.date === eventDate);
+      if (eventIndex === -1) {
+        throw new Error('Event not found');
+      }
+
+      // Update local state immediately for better UX
+      const updatedData = [...scheduleData];
+      const currentVolunteers = updatedData[eventIndex].volunteers;
+      updatedData[eventIndex].volunteers = currentVolunteers 
+        ? `${currentVolunteers}, ${userName}` 
+        : userName;
+      setScheduleData(updatedData);
+
+      // Note: Actual Google Sheets writing would require server-side implementation
+      // For now, we'll just update the local state
+      console.log('Opt-in successful (local state updated)');
+      
+    } catch (error) {
+      console.error('Error during opt-in:', error);
+      // Revert local state on error
+      refreshData();
+      throw error;
+    }
+  };
+
   const isEventInFuture = (dateStr: string): boolean => {
     try {
       const parts = dateStr.includes('.') ? dateStr.split('.') : dateStr.split('/');
@@ -161,7 +192,7 @@ const ScheduleView = () => {
       <div className="px-4 py-8">
         <div className="text-center">
           <RefreshCw className="h-8 w-8 text-sro-olive mx-auto mb-4 animate-spin" />
-          <p className="text-gray-600">Ladataan aikataulua Google Sheetsistä...</p>
+          <p className="text-gray-600 dark:text-gray-300">Ladataan aikataulua Google Sheetsistä...</p>
         </div>
       </div>
     );
@@ -172,7 +203,7 @@ const ScheduleView = () => {
       <div className="px-4 py-8">
         <div className="text-center">
           <Wifi className="h-8 w-8 text-red-500 mx-auto mb-4" />
-          <p className="text-red-600 mb-4">{error}</p>
+          <p className="text-red-600 dark:text-red-400 mb-4">{error}</p>
           <button 
             onClick={refreshData}
             className="bg-sro-olive text-white px-4 py-2 rounded-lg hover:bg-sro-olive/90 transition-colors"
@@ -188,10 +219,10 @@ const ScheduleView = () => {
     <div className="px-4 py-6">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h2 className="text-xl font-bree font-bold text-sro-granite">
+          <h2 className="text-xl font-bree font-bold text-sro-granite dark:text-white">
             {showPastEvents ? `Menneet tapahtumat ${selectedYear}` : 'Tuleva aikataulu'}
           </h2>
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-gray-600 dark:text-gray-400">
             {showPastEvents ? 'Menneet tehtävät ja vastuuhenkilöt' : 'Tulevat tehtävät ja vastuuhenkilöt'}
           </p>
         </div>
@@ -221,7 +252,7 @@ const ScheduleView = () => {
             <select
               value={selectedYear}
               onChange={(e) => setSelectedYear(e.target.value)}
-              className="appearance-none bg-white border border-gray-300 rounded-lg px-4 py-2 pr-8 text-sm font-medium text-sro-granite focus:outline-none focus:ring-2 focus:ring-sro-olive focus:border-transparent"
+              className="appearance-none bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 pr-8 text-sm font-medium text-sro-granite dark:text-white focus:outline-none focus:ring-2 focus:ring-sro-olive focus:border-transparent"
             >
               {availableYears.filter(year => year !== '2025').map((year) => (
                 <option key={year} value={year}>{year}</option>
@@ -241,14 +272,15 @@ const ScheduleView = () => {
             volunteers={item.volunteers}
             backup={item.backup}
             notes={item.notes}
+            onOptIn={handleOptIn}
           />
         ))}
       </div>
 
       {filteredData.length === 0 && !loading && (
         <div className="text-center py-12">
-          <Calendar className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-          <p className="text-gray-500">
+          <Calendar className="h-12 w-12 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
+          <p className="text-gray-500 dark:text-gray-400">
             {showPastEvents ? 'Ei menneitä tapahtumia' : 'Ei tulevia tapahtumia'}
           </p>
         </div>
