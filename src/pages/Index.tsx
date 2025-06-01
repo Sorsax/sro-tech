@@ -3,8 +3,8 @@ import { useState } from 'react';
 import Header from '../components/Header';
 import ScheduleView from '../components/ScheduleView';
 import ContactsView from '../components/ContactsView';
+import SettingsView from '../components/SettingsView';
 import NavigationTabs from '../components/NavigationTabs';
-import { Users, Settings } from 'lucide-react';
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState('schedule');
@@ -16,20 +16,14 @@ const Index = () => {
       case 'volunteers':
         return <ContactsView />;
       case 'settings':
-        return (
-          <div className="px-4 py-8 text-center">
-            <Settings className="h-12 w-12 text-sro-olive mx-auto mb-4" />
-            <h2 className="text-xl font-bree font-bold text-sro-granite mb-2">Asetukset</h2>
-            <p className="text-gray-600">Sovellusasetukset tulossa pian</p>
-          </div>
-        );
+        return <SettingsView />;
       default:
         return <ScheduleView />;
     }
   };
 
   return (
-    <div className="min-h-screen bg-sro-gray flex flex-col max-w-md mx-auto border-x border-gray-200">
+    <div className="min-h-screen bg-sro-gray dark:bg-gray-900 flex flex-col max-w-md mx-auto border-x border-gray-200 dark:border-gray-700">
       <Header />
       
       <main className="flex-1 overflow-y-auto pb-20">
