@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Users, Phone, Mail, RefreshCw, Wifi } from 'lucide-react';
 
@@ -146,7 +145,7 @@ const ContactsView = () => {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h2 className="text-xl font-bree font-bold text-sro-granite dark:text-white">Vapaaehtoiset</h2>
-          <p className="text-sm text-gray-600 dark:text-gray-400">SRO Tech tiimin yhteystiedot</p>
+          <p className="text-sm text-gray-600 dark:text-gray-400">SRO Striimitiimin yhteystiedot</p>
         </div>
         <button 
           onClick={refreshData}
