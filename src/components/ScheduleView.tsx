@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import EventCard from './EventCard';
-import { RefreshCw, Wifi, Calendar, Clock, History } from 'lucide-react';
+import { RefreshCw, Wifi, Calendar, Clock, History, ChevronDown } from 'lucide-react';
 
 interface ScheduleItem {
   date: string;
@@ -15,9 +15,13 @@ const ScheduleView = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showPastEvents, setShowPastEvents] = useState(false);
+  const [selectedYear, setSelectedYear] = useState('2025');
 
   // Google Sheets configuration
   const SHEET_ID = '1iZfopLSu7IxqF-15TYT21xEfvX_Q1-Z1OX8kzagGrDg';
+  
+  // Available years for past events
+  const availableYears = ['2022', '2023', '2024', '2025'];
   
   const parseCSVLine = (line: string): string[] => {
     const result: string[] = [];
@@ -41,21 +45,15 @@ const ScheduleView = () => {
     return result;
   };
   
-  const fetchGoogleSheetData = async () => {
+  const fetchGoogleSheetData = async (year: string = '2025') => {
     try {
-      console.log('Fetching data from Google Sheets...');
+      console.log('Fetching data from Google Sheets for year:', year);
       
-      // Get current year for sheet name
-      const currentYear = new Date().getFullYear().toString();
-      console.log('Fetching data from sheet:', currentYear);
-      
-      // Get the sheet ID for the current year sheet
-      // We'll try to get the sheet by name using the export URL with the sheet name
-      const csvUrl = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${currentYear}`;
+      const csvUrl = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${year}`;
       
       const response = await fetch(csvUrl);
       if (!response.ok) {
-        throw new Error('Failed to fetch sheet data');
+        throw new Error(`Failed to fetch sheet data for year ${year}`);
       }
       
       const csvText = await response.text();
@@ -105,15 +103,22 @@ const ScheduleView = () => {
     }
   };
 
-  const filteredData = scheduleData.filter(item => 
-    showPastEvents ? !isEventInFuture(item.date) : isEventInFuture(item.date)
-  );
+  const filteredData = scheduleData.filter(item => {
+    if (showPastEvents) {
+      // For past events, show all events from the selected year
+      return true;
+    } else {
+      // For future events, only show future events from current year (2025)
+      return isEventInFuture(item.date);
+    }
+  });
 
   useEffect(() => {
     const loadData = async () => {
       setLoading(true);
       try {
-        const data = await fetchGoogleSheetData();
+        const yearToFetch = showPastEvents ? selectedYear : '2025';
+        const data = await fetchGoogleSheetData(yearToFetch);
         setScheduleData(data);
         setError(null);
       } catch (err) {
@@ -125,13 +130,14 @@ const ScheduleView = () => {
     };
 
     loadData();
-  }, []);
+  }, [showPastEvents, selectedYear]);
 
   const refreshData = async () => {
     setScheduleData([]);
     setLoading(true);
     try {
-      const data = await fetchGoogleSheetData();
+      const yearToFetch = showPastEvents ? selectedYear : '2025';
+      const data = await fetchGoogleSheetData(yearToFetch);
       setScheduleData(data);
       setError(null);
     } catch (err) {
@@ -139,6 +145,14 @@ const ScheduleView = () => {
       setError('Virhe ladattaessa aikataulua Google Sheetsistä');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleTogglePastEvents = () => {
+    setShowPastEvents(!showPastEvents);
+    if (!showPastEvents) {
+      // When switching to past events, default to 2024
+      setSelectedYear('2024');
     }
   };
 
@@ -175,7 +189,7 @@ const ScheduleView = () => {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h2 className="text-xl font-bree font-bold text-sro-granite">
-            {showPastEvents ? 'Menneet tapahtumat' : 'Tuleva aikataulu'}
+            {showPastEvents ? `Menneet tapahtumat ${selectedYear}` : 'Tuleva aikataulu'}
           </h2>
           <p className="text-sm text-gray-600">
             {showPastEvents ? 'Menneet tehtävät ja vastuuhenkilöt' : 'Tulevat tehtävät ja vastuuhenkilöt'}
@@ -183,7 +197,7 @@ const ScheduleView = () => {
         </div>
         <div className="flex space-x-2">
           <button 
-            onClick={() => setShowPastEvents(!showPastEvents)}
+            onClick={handleTogglePastEvents}
             className={`p-2 rounded-lg transition-colors ${
               showPastEvents 
                 ? 'bg-sro-olive text-white' 
@@ -200,6 +214,23 @@ const ScheduleView = () => {
           </button>
         </div>
       </div>
+
+      {showPastEvents && (
+        <div className="mb-4">
+          <div className="relative">
+            <select
+              value={selectedYear}
+              onChange={(e) => setSelectedYear(e.target.value)}
+              className="appearance-none bg-white border border-gray-300 rounded-lg px-4 py-2 pr-8 text-sm font-medium text-sro-granite focus:outline-none focus:ring-2 focus:ring-sro-olive focus:border-transparent"
+            >
+              {availableYears.filter(year => year !== '2025').map((year) => (
+                <option key={year} value={year}>{year}</option>
+              ))}
+            </select>
+            <ChevronDown className="absolute right-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+          </div>
+        </div>
+      )}
 
       <div className="space-y-4">
         {filteredData.map((item, index) => (
