@@ -1,8 +1,7 @@
 
-import { Calendar, Users, UserCheck, StickyNote, UserPlus } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { useSettings } from '@/contexts/SettingsContext';
 import { useState } from 'react';
+import { Calendar, Clock, Users, UserPlus } from 'lucide-react';
+import { useSettings } from '@/contexts/SettingsContext';
 
 interface EventCardProps {
   date: string;
@@ -10,137 +9,92 @@ interface EventCardProps {
   volunteers: string;
   backup: string;
   notes: string;
-  onOptIn?: (date: string, name: string) => void;
+  onOptIn: (eventDate: string, userName: string) => Promise<void>;
 }
 
 const EventCard = ({ date, event, volunteers, backup, notes, onOptIn }: EventCardProps) => {
   const { userName } = useSettings();
   const [isOptingIn, setIsOptingIn] = useState(false);
-
-  const formatDate = (dateStr: string) => {
-    try {
-      // Handle both dot and slash formats: "5.1.2025" or "5/1/2025"
-      const parts = dateStr.includes('.') ? dateStr.split('.') : dateStr.split('/');
-      const [day, month, year] = parts;
-      const date = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
-      return {
-        dayName: date.toLocaleDateString('fi-FI', { weekday: 'short' }),
-        day: day.padStart(2, '0'),
-        month: date.toLocaleDateString('fi-FI', { month: 'short' })
-      };
-    } catch {
-      return { dayName: '', day: dateStr, month: '' };
-    }
-  };
-
-  const isEventInFuture = (dateStr: string): boolean => {
-    try {
-      const parts = dateStr.includes('.') ? dateStr.split('.') : dateStr.split('/');
-      const [day, month, year] = parts;
-      const eventDate = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      return eventDate >= today;
-    } catch {
-      return true;
-    }
-  };
+  const [optInStatus, setOptInStatus] = useState<'idle' | 'success' | 'error'>('idle');
 
   const handleOptIn = async () => {
-    if (!userName.trim()) {
-      alert('Aseta ensin nimesi asetuksista ennen ilmoittautumista!');
+    if (!userName) {
+      alert('Aseta ensin nimesi tili-paneelista (klikkaa profiilikuvaa)');
       return;
     }
 
     setIsOptingIn(true);
+    setOptInStatus('idle');
+    
     try {
-      if (onOptIn) {
-        await onOptIn(date, userName);
-      }
+      await onOptIn(date, userName);
+      setOptInStatus('success');
+      setTimeout(() => setOptInStatus('idle'), 3000);
     } catch (error) {
-      console.error('Error opting in:', error);
+      console.error('Opt-in error:', error);
+      setOptInStatus('error');
+      setTimeout(() => setOptInStatus('idle'), 5000);
     } finally {
       setIsOptingIn(false);
     }
   };
 
-  const formattedDate = formatDate(date);
-  const isFutureEvent = isEventInFuture(date);
-  const isUserAlreadyVolunteering = volunteers.toLowerCase().includes(userName.toLowerCase()) && userName.trim() !== '';
+  const isUserAlreadyVolunteering = volunteers.toLowerCase().includes(userName.toLowerCase());
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4 mb-4 animate-fade-in hover:shadow-md transition-shadow">
-      {/* Date Section */}
-      <div className="flex items-center mb-3">
-        <div className="bg-sro-olive text-white rounded-lg p-3 mr-4 min-w-[60px] text-center">
-          <div className="text-xs font-medium uppercase">{formattedDate.dayName}</div>
-          <div className="text-lg font-bold">{formattedDate.day}</div>
-          <div className="text-xs uppercase">{formattedDate.month}</div>
+    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4 mb-4">
+      <div className="flex items-start justify-between mb-3">
+        <div className="flex items-center space-x-2">
+          <Calendar className="h-4 w-4 text-sro-olive" />
+          <span className="font-semibold text-sro-granite dark:text-white">{date}</span>
         </div>
-        <div className="flex-1">
-          <h3 className="text-lg font-semibold text-sro-granite dark:text-white mb-1 leading-tight">
-            {event}
-          </h3>
-          <div className="flex items-center text-sm text-gray-500 dark:text-gray-400">
-            <Calendar className="h-4 w-4 mr-1" />
-            {date}
-          </div>
-        </div>
+        {!isUserAlreadyVolunteering && (
+          <button
+            onClick={handleOptIn}
+            disabled={isOptingIn || !userName}
+            className={`flex items-center space-x-1 px-3 py-1 rounded-lg text-sm font-medium transition-colors ${
+              optInStatus === 'success' 
+                ? 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300'
+                : optInStatus === 'error'
+                ? 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300'
+                : isOptingIn
+                ? 'bg-gray-100 text-gray-400 dark:bg-gray-700 dark:text-gray-500'
+                : 'bg-sro-olive/10 text-sro-olive hover:bg-sro-olive/20 dark:bg-sro-olive/20 dark:hover:bg-sro-olive/30'
+            }`}
+          >
+            <UserPlus className="h-3 w-3" />
+            <span>
+              {optInStatus === 'success' ? 'Ilmoittautunut!' : 
+               optInStatus === 'error' ? 'Virhe' :
+               isOptingIn ? 'Ilmoittautuu...' : 'Ilmoittaudu'}
+            </span>
+          </button>
+        )}
       </div>
-
-      {/* Details Section */}
-      <div className="space-y-3">
+      
+      <div className="space-y-2">
+        <div className="flex items-start space-x-2">
+          <Clock className="h-4 w-4 text-sro-olive mt-0.5 flex-shrink-0" />
+          <span className="text-sm text-sro-granite dark:text-white font-medium">{event}</span>
+        </div>
+        
         {volunteers && (
-          <div className="flex items-start space-x-3">
-            <Users className="h-4 w-4 text-sro-olive mt-0.5 flex-shrink-0" />
-            <div>
-              <div className="text-sm font-medium text-sro-granite dark:text-white">Vapaaehtoiset</div>
-              <div className="text-sm text-gray-600 dark:text-gray-300">{volunteers}</div>
-            </div>
+          <div className="flex items-start space-x-2">
+            <Users className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
+            <span className="text-sm text-gray-600 dark:text-gray-300">{volunteers}</span>
           </div>
         )}
-
+        
         {backup && (
-          <div className="flex items-start space-x-3">
-            <UserCheck className="h-4 w-4 text-sro-olive mt-0.5 flex-shrink-0" />
-            <div>
-              <div className="text-sm font-medium text-sro-granite dark:text-white">Varahenkilö</div>
-              <div className="text-sm text-gray-600 dark:text-gray-300">{backup}</div>
-            </div>
+          <div className="flex items-start space-x-2">
+            <Users className="h-4 w-4 text-blue-600 mt-0.5 flex-shrink-0" />
+            <span className="text-sm text-gray-600 dark:text-gray-300">Vara: {backup}</span>
           </div>
         )}
-
+        
         {notes && (
-          <div className="flex items-start space-x-3">
-            <StickyNote className="h-4 w-4 text-sro-olive mt-0.5 flex-shrink-0" />
-            <div>
-              <div className="text-sm font-medium text-sro-granite dark:text-white">Lisätiedot</div>
-              <div className="text-sm text-gray-600 dark:text-gray-300">{notes}</div>
-            </div>
-          </div>
-        )}
-
-        {/* Opt-in Button for Future Events */}
-        {isFutureEvent && userName.trim() && !isUserAlreadyVolunteering && (
-          <div className="pt-2 border-t border-gray-100 dark:border-gray-600">
-            <Button 
-              onClick={handleOptIn}
-              disabled={isOptingIn}
-              size="sm"
-              className="w-full bg-sro-olive hover:bg-sro-olive/90 text-white"
-            >
-              <UserPlus className="h-4 w-4 mr-2" />
-              {isOptingIn ? 'Ilmoittaudutaan...' : 'Ilmoittaudu vapaaehtoiseksi'}
-            </Button>
-          </div>
-        )}
-
-        {isUserAlreadyVolunteering && (
-          <div className="pt-2 border-t border-gray-100 dark:border-gray-600">
-            <div className="text-sm text-sro-olive font-medium flex items-center">
-              <UserCheck className="h-4 w-4 mr-2" />
-              Olet jo ilmoittautunut tähän tapahtumaan
-            </div>
+          <div className="mt-2 p-2 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg">
+            <p className="text-sm text-yellow-800 dark:text-yellow-200">{notes}</p>
           </div>
         )}
       </div>
