@@ -1,5 +1,6 @@
 
 import { useState, useEffect } from 'react';
+import { RefreshCw } from 'lucide-react';
 import EventCard from './EventCard';
 
 interface Event {
@@ -16,50 +17,52 @@ const ScheduleView = () => {
   const [error, setError] = useState<string | null>(null);
   const [showAll, setShowAll] = useState(false);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      setError(null);
-
-      try {
-        console.log('Attempting to fetch events from Sheet2API...');
-        const response = await fetch('https://sheet2api.com/v1/1sL40Z6CTCuS/sro-striimaustiimin-kalenteri');
-        
-        console.log('Response status:', response.status);
-        console.log('Response ok:', response.ok);
-        
-        if (!response.ok) {
-          const errorText = await response.text();
-          console.error('API Error Details:', errorText);
-          throw new Error(`API virhe: ${response.status} - ${errorText}`);
-        }
-        
-        const data = await response.json();
-        console.log('Received data:', data);
-        
-        // Check if data is an array
-        if (Array.isArray(data)) {
-          setEvents(data);
-        } else {
-          console.error('Data is not an array:', data);
-          throw new Error('Saatu data ei ole oikeassa muodossa');
-        }
-      } catch (error: any) {
-        console.error('Virhe datan hakemisessa:', error);
-        setError(`Tapahtui virhe tietoja haettaessa: ${error.message}. Tarkista että Google Sheets -taulukossa ei ole päällekkäisiä sarakeotsikoita.`);
-      } finally {
-        setLoading(false);
+  const fetchEvents = async () => {
+    try {
+      console.log('Fetching events from SheetDB...');
+      const response = await fetch('https://sheetdb.io/api/v1/7tbydhaf8t74s');
+      
+      console.log('Response status:', response.status);
+      console.log('Response ok:', response.ok);
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('API Error Details:', errorText);
+        throw new Error(`API virhe: ${response.status} - ${errorText}`);
       }
+      
+      const data = await response.json();
+      console.log('Received data:', data);
+      
+      // Check if data is an array
+      if (Array.isArray(data)) {
+        setEvents(data);
+        setError(null);
+      } else {
+        console.error('Data is not an array:', data);
+        throw new Error('Saatu data ei ole oikeassa muodossa');
+      }
+    } catch (error: any) {
+      console.error('Virhe datan hakemisessa:', error);
+      setError(`Tapahtui virhe tietoja haettaessa: ${error.message}`);
+    }
+  };
+
+  useEffect(() => {
+    const loadEvents = async () => {
+      setLoading(true);
+      await fetchEvents();
+      setLoading(false);
     };
 
-    fetchData();
+    loadEvents();
   }, []);
 
   const handleOptIn = async (eventDate: string, userName: string) => {
     try {
       console.log('Attempting opt-in for:', { eventDate, userName });
       
-      const response = await fetch('https://sheet2api.com/v1/1sL40Z6CTCuS/sro-striimaustiimin-kalenteri', {
+      const response = await fetch('https://sheetdb.io/api/v1/7tbydhaf8t74s', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -100,26 +103,37 @@ const ScheduleView = () => {
     }
   };
 
+  const refreshData = async () => {
+    setEvents([]);
+    setLoading(true);
+    await fetchEvents();
+    setLoading(false);
+  };
+
   if (loading) {
     return (
-      <div className="flex items-center justify-center p-8">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-sro-olive"></div>
-        <span className="ml-3 text-gray-600 dark:text-gray-400">Ladataan aikataulua...</span>
+      <div className="px-4 py-8">
+        <div className="text-center">
+          <RefreshCw className="h-8 w-8 text-sro-olive mx-auto mb-4 animate-spin" />
+          <p className="text-gray-600 dark:text-gray-300">Ladataan aikataulua...</p>
+        </div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="p-4 m-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
-        <div className="text-red-700 dark:text-red-300 font-medium mb-2">Virhe tietojen haussa</div>
-        <div className="text-red-600 dark:text-red-400 text-sm">{error}</div>
-        <button 
-          onClick={() => window.location.reload()} 
-          className="mt-3 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
-        >
-          Yritä uudelleen
-        </button>
+      <div className="px-4 py-8">
+        <div className="text-center">
+          <RefreshCw className="h-8 w-8 text-red-500 mx-auto mb-4" />
+          <p className="text-red-600 dark:text-red-400 mb-4">{error}</p>
+          <button 
+            onClick={refreshData}
+            className="bg-sro-olive text-white px-4 py-2 rounded-lg hover:bg-sro-olive/90 transition-colors"
+          >
+            Yritä uudelleen
+          </button>
+        </div>
       </div>
     );
   }
