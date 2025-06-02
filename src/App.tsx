@@ -1,3 +1,4 @@
+
 import { useEffect } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -12,6 +13,14 @@ const queryClient = new QueryClient();
 
 const App = () => {
   useEffect(() => {
+    // Remove system preference for dark mode
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    const handleChange = () => {
+      // Do nothing - this prevents system preference from affecting app
+    };
+    mediaQuery.addEventListener('change', handleChange);
+    
+    // Remove badge
     const interval = setInterval(() => {
       const badge = document.querySelector('#lovable-badge-close');
       if (badge?.parentElement) {
@@ -20,7 +29,10 @@ const App = () => {
       }
     }, 300);
 
-    return () => clearInterval(interval);
+    return () => {
+      mediaQuery.removeEventListener('change', handleChange);
+      clearInterval(interval);
+    };
   }, []);
 
   return (

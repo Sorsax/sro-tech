@@ -1,9 +1,14 @@
 
+import { useSettings } from '@/contexts/SettingsContext';
 import { Bell } from 'lucide-react';
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 const Header = () => {
+  const { userName } = useSettings();
+  const initials = userName ? userName.charAt(0).toUpperCase() : "S";
+
   return (
-    <header className="bg-sro-olive dark:bg-sro-olive text-white px-4 py-6 shadow-lg">
+    <header className="bg-sro-olive dark:bg-sro-olive text-white px-4 py-3 shadow-md sticky top-0 z-10">
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-3">
           <div className="bg-white/10 p-2 rounded-lg">
@@ -14,13 +19,22 @@ const Header = () => {
             />
           </div>
           <div>
-            <h1 className="text-2xl font-bree font-bold">SRO Tech</h1>
-            <p className="text-white/80 text-sm font-light">Raamattuopisto</p>
+            <h1 className="text-xl font-bree font-bold">SRO Tech</h1>
+            <p className="text-white/80 text-xs font-light">Raamattuopisto</p>
           </div>
         </div>
-        <button className="bg-white/10 p-2 rounded-lg hover:bg-white/20 transition-colors">
-          <Bell className="h-5 w-5" />
-        </button>
+
+        <div className="flex items-center space-x-3">
+          <button className="bg-white/10 p-2 rounded-lg hover:bg-white/20 transition-colors">
+            <Bell className="h-5 w-5" />
+          </button>
+          
+          <Avatar className="h-8 w-8 bg-white/20 border-2 border-white/30">
+            <AvatarFallback className="text-sm font-semibold text-white bg-transparent">
+              {initials}
+            </AvatarFallback>
+          </Avatar>
+        </div>
       </div>
     </header>
   );

@@ -1,7 +1,9 @@
 
 import { useState, useEffect } from 'react';
 import EventCard from './EventCard';
-import { RefreshCw, Wifi, Calendar, Clock, History, ChevronDown } from 'lucide-react';
+import { RefreshCw, Wifi, Calendar, Clock, History, ChevronDown, Plus } from 'lucide-react';
+import { useToast } from '@/components/ui/use-toast';
+import { Button } from '@/components/ui/button';
 
 interface ScheduleItem {
   date: string;
@@ -12,14 +14,19 @@ interface ScheduleItem {
 }
 
 const ScheduleView = () => {
+  const { toast } = useToast();
   const [scheduleData, setScheduleData] = useState<ScheduleItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showPastEvents, setShowPastEvents] = useState(false);
   const [selectedYear, setSelectedYear] = useState('2025');
+  const [showMore, setShowMore] = useState(false);
+  const EVENTS_TO_SHOW = 3;
 
   // Google Sheets configuration
   const SHEET_ID = '1iZfopLSu7IxqF-15TYT21xEfvX_Q1-Z1OX8kzagGrDg';
+  // Sheet2API endpoint
+  const SHEET2API_URL = 'https://sheet2api.com/v1/1sL40Z6CTCuS/sro-striimaustiimin-kalenteri';
   
   // Available years for past events
   const availableYears = ['2022', '2023', '2024', '2025'];
@@ -91,33 +98,92 @@ const ScheduleView = () => {
     }
   };
 
-  const handleOptIn = async (eventDate: string, userName: string) => {
+  const findRowNumberForEvent = async (eventDate: string, eventName: string) => {
     try {
+      // Fetch all data to find the row index
+      const response = await fetch(`${SHEET2API_URL}/Sheet1`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch data for row lookup');
+      }
+      
+      const data = await response.json();
+      
+      // Find the index of the event in the data
+      const eventIndex = data.findIndex((item: any) => 
+        item.Päivämäärä === eventDate && item.Tapahtuma === eventName
+      );
+      
+      if (eventIndex === -1) {
+        throw new Error('Event not found in the sheet');
+      }
+      
+      // Add 3 to account for header rows (Sheet2API row numbers start from 1, and there are 2 header rows)
+      return eventIndex + 3;
+    } catch (error) {
+      console.error('Error finding row number:', error);
+      throw error;
+    }
+  };
+
+  const handleOptIn = async (eventDate: string, eventName: string, userName: string) => {
+    try {
+      setLoading(true);
       console.log(`Attempting to opt in ${userName} for event on ${eventDate}`);
       
       // Find the event in current data
-      const eventIndex = scheduleData.findIndex(item => item.date === eventDate);
+      const eventIndex = scheduleData.findIndex(item => item.date === eventDate && item.event === eventName);
       if (eventIndex === -1) {
         throw new Error('Event not found');
       }
 
-      // Update local state immediately for better UX
-      const updatedData = [...scheduleData];
-      const currentVolunteers = updatedData[eventIndex].volunteers;
-      updatedData[eventIndex].volunteers = currentVolunteers 
+      // Find the row number in the Google Sheet
+      const rowNumber = await findRowNumberForEvent(eventDate, eventName);
+      console.log(`Found event at row ${rowNumber}`);
+      
+      // Get current volunteers
+      const currentVolunteers = scheduleData[eventIndex].volunteers;
+      const updatedVolunteers = currentVolunteers 
         ? `${currentVolunteers}, ${userName}` 
         : userName;
-      setScheduleData(updatedData);
+      
+      // Update Google Sheet via Sheet2API
+      const updateResponse = await fetch(`${SHEET2API_URL}/Sheet1/${rowNumber}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          'Vapaaehtoiset': updatedVolunteers
+        })
+      });
+      
+      if (!updateResponse.ok) {
+        throw new Error('Failed to update the sheet');
+      }
 
-      // Note: Actual Google Sheets writing would require server-side implementation
-      // For now, we'll just update the local state
-      console.log('Opt-in successful (local state updated)');
+      // Update local state for better UX
+      const updatedData = [...scheduleData];
+      updatedData[eventIndex].volunteers = updatedVolunteers;
+      setScheduleData(updatedData);
+      
+      toast({
+        title: "Ilmoittautuminen onnistui!",
+        description: `Olet nyt ilmoittautunut tapahtumaan: ${eventName}`,
+      });
+      
+      console.log('Opt-in successful!');
       
     } catch (error) {
       console.error('Error during opt-in:', error);
+      toast({
+        title: "Ilmoittautuminen epäonnistui",
+        description: "Tapahtui virhe ilmoittautumisessa. Yritä myöhemmin uudelleen.",
+        variant: "destructive",
+      });
       // Revert local state on error
       refreshData();
-      throw error;
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -143,6 +209,10 @@ const ScheduleView = () => {
       return isEventInFuture(item.date);
     }
   });
+
+  const displayedEvents = showMore || showPastEvents 
+    ? filteredData 
+    : filteredData.slice(0, EVENTS_TO_SHOW);
 
   useEffect(() => {
     const loadData = async () => {
@@ -181,6 +251,7 @@ const ScheduleView = () => {
 
   const handleTogglePastEvents = () => {
     setShowPastEvents(!showPastEvents);
+    setShowMore(false);
     if (!showPastEvents) {
       // When switching to past events, default to 2024
       setSelectedYear('2024');
@@ -264,7 +335,7 @@ const ScheduleView = () => {
       )}
 
       <div className="space-y-4">
-        {filteredData.map((item, index) => (
+        {displayedEvents.map((item, index) => (
           <EventCard
             key={index}
             date={item.date}
@@ -272,10 +343,35 @@ const ScheduleView = () => {
             volunteers={item.volunteers}
             backup={item.backup}
             notes={item.notes}
-            onOptIn={handleOptIn}
+            onOptIn={(date, name) => handleOptIn(date, item.event, name)}
           />
         ))}
       </div>
+
+      {!showPastEvents && filteredData.length > EVENTS_TO_SHOW && !showMore && (
+        <div className="mt-6 text-center">
+          <Button 
+            onClick={() => setShowMore(true)}
+            variant="outline" 
+            className="border-sro-olive text-sro-olive hover:bg-sro-olive/10"
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            Näytä kaikki ({filteredData.length - EVENTS_TO_SHOW} lisää)
+          </Button>
+        </div>
+      )}
+
+      {!showPastEvents && showMore && (
+        <div className="mt-6 text-center">
+          <Button 
+            onClick={() => setShowMore(false)}
+            variant="outline" 
+            className="border-sro-olive text-sro-olive hover:bg-sro-olive/10"
+          >
+            Näytä vähemmän
+          </Button>
+        </div>
+      )}
 
       {filteredData.length === 0 && !loading && (
         <div className="text-center py-12">

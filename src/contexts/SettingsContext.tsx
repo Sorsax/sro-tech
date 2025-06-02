@@ -21,6 +21,7 @@ export const useSettings = () => {
 export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [isDarkMode, setIsDarkMode] = useState(() => {
     const saved = localStorage.getItem('darkMode');
+    // Default to false instead of checking system preference
     return saved ? JSON.parse(saved) : false;
   });
 
