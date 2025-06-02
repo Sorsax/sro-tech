@@ -59,7 +59,6 @@ const EventCard = ({ date, event, volunteers, backup, notes, onOptIn }: EventCar
       }
     } catch (error) {
       console.error('Error opting in:', error);
-      alert('Ilmoittautumisessa tapahtui virhe. Yritä uudelleen.');
     } finally {
       setIsOptingIn(false);
     }
@@ -128,7 +127,7 @@ const EventCard = ({ date, event, volunteers, backup, notes, onOptIn }: EventCar
               onClick={handleOptIn}
               disabled={isOptingIn}
               size="sm"
-              className="bg-sro-olive hover:bg-sro-olive/90 text-white"
+              className="w-full bg-sro-olive hover:bg-sro-olive/90 text-white"
             >
               <UserPlus className="h-4 w-4 mr-2" />
               {isOptingIn ? 'Ilmoittaudutaan...' : 'Ilmoittaudu vapaaehtoiseksi'}
@@ -138,8 +137,9 @@ const EventCard = ({ date, event, volunteers, backup, notes, onOptIn }: EventCar
 
         {isUserAlreadyVolunteering && (
           <div className="pt-2 border-t border-gray-100 dark:border-gray-600">
-            <div className="text-sm text-sro-olive font-medium">
-              ✓ Olet jo ilmoittautunut tähän tapahtumaan
+            <div className="text-sm text-sro-olive font-medium flex items-center">
+              <UserCheck className="h-4 w-4 mr-2" />
+              Olet jo ilmoittautunut tähän tapahtumaan
             </div>
           </div>
         )}
