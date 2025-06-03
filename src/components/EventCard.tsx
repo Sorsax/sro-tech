@@ -1,4 +1,3 @@
-
 import { Calendar, Users, UserCheck, StickyNote, UserPlus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useSettings } from '@/contexts/SettingsContext';
@@ -14,7 +13,7 @@ interface EventCardProps {
 }
 
 const EventCard = ({ date, event, volunteers, backup, notes, onOptIn }: EventCardProps) => {
-  const { userName } = useSettings();
+  const { userName, t } = useSettings();
   const [isOptingIn, setIsOptingIn] = useState(false);
 
   const formatDate = (dateStr: string) => {
@@ -48,7 +47,7 @@ const EventCard = ({ date, event, volunteers, backup, notes, onOptIn }: EventCar
 
   const handleOptIn = async () => {
     if (!userName.trim()) {
-      alert('Aseta ensin nimesi asetuksista ennen ilmoittautumista!');
+      alert(t('setNameFirst'));
       return;
     }
 
@@ -94,7 +93,7 @@ const EventCard = ({ date, event, volunteers, backup, notes, onOptIn }: EventCar
           <div className="flex items-start space-x-3">
             <Users className="h-4 w-4 text-sro-olive mt-0.5 flex-shrink-0" />
             <div>
-              <div className="text-sm font-medium text-sro-granite dark:text-white">Vapaaehtoiset</div>
+              <div className="text-sm font-medium text-sro-granite dark:text-white">{t('volunteers')}</div>
               <div className="text-sm text-gray-600 dark:text-gray-300">{volunteers}</div>
             </div>
           </div>
@@ -104,7 +103,7 @@ const EventCard = ({ date, event, volunteers, backup, notes, onOptIn }: EventCar
           <div className="flex items-start space-x-3">
             <UserCheck className="h-4 w-4 text-sro-olive mt-0.5 flex-shrink-0" />
             <div>
-              <div className="text-sm font-medium text-sro-granite dark:text-white">Varahenkilö</div>
+              <div className="text-sm font-medium text-sro-granite dark:text-white">{t('backup')}</div>
               <div className="text-sm text-gray-600 dark:text-gray-300">{backup}</div>
             </div>
           </div>
@@ -114,7 +113,7 @@ const EventCard = ({ date, event, volunteers, backup, notes, onOptIn }: EventCar
           <div className="flex items-start space-x-3">
             <StickyNote className="h-4 w-4 text-sro-olive mt-0.5 flex-shrink-0" />
             <div>
-              <div className="text-sm font-medium text-sro-granite dark:text-white">Lisätiedot</div>
+              <div className="text-sm font-medium text-sro-granite dark:text-white">{t('notes')}</div>
               <div className="text-sm text-gray-600 dark:text-gray-300">{notes}</div>
             </div>
           </div>
@@ -130,7 +129,7 @@ const EventCard = ({ date, event, volunteers, backup, notes, onOptIn }: EventCar
               className="w-full bg-sro-olive hover:bg-sro-olive/90 text-white"
             >
               <UserPlus className="h-4 w-4 mr-2" />
-              {isOptingIn ? 'Ilmoittaudutaan...' : 'Ilmoittaudu vapaaehtoiseksi'}
+              {isOptingIn ? t('optingIn') : t('optInButton')}
             </Button>
           </div>
         )}
@@ -139,7 +138,7 @@ const EventCard = ({ date, event, volunteers, backup, notes, onOptIn }: EventCar
           <div className="pt-2 border-t border-gray-100 dark:border-gray-600">
             <div className="text-sm text-sro-olive font-medium flex items-center">
               <UserCheck className="h-4 w-4 mr-2" />
-              Olet jo ilmoittautunut tähän tapahtumaan
+              {t('alreadyOptedIn')}
             </div>
           </div>
         )}
