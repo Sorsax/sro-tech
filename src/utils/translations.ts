@@ -34,6 +34,18 @@ export const translations = {
     loadingEvents: "Ladataan tapahtumia...",
     noEvents: "Ei tulevia tapahtumia",
     refreshEvents: "Päivitä tapahtumat",
+    upcomingSchedule: "Tuleva aikataulu",
+    pastEvents: "Menneet tapahtumat",
+    upcomingTasks: "Tulevat tehtävät ja vastuuhenkilöt",
+    pastTasks: "Menneet tehtävät ja vastuuhenkilöt",
+    showMore: "Näytä kaikki",
+    showLess: "Näytä vähemmän",
+    moreEvents: "lisää",
+    loadingFromSheets: "Ladataan aikataulua Google Sheetsistä...",
+    errorLoadingSheets: "Virhe ladattaessa aikataulua Google Sheetsistä",
+    tryAgain: "Yritä uudelleen",
+    noPastEvents: "Ei menneitä tapahtumia",
+    noUpcomingEvents: "Ei tulevia tapahtumia",
     
     // Languages
     languages: {
@@ -77,6 +89,18 @@ export const translations = {
     loadingEvents: "Loading events...",
     noEvents: "No upcoming events",
     refreshEvents: "Refresh events",
+    upcomingSchedule: "Upcoming Schedule",
+    pastEvents: "Past Events",
+    upcomingTasks: "Upcoming tasks and responsibilities",
+    pastTasks: "Past tasks and responsibilities",
+    showMore: "Show all",
+    showLess: "Show less",
+    moreEvents: "more",
+    loadingFromSheets: "Loading schedule from Google Sheets...",
+    errorLoadingSheets: "Error loading schedule from Google Sheets",
+    tryAgain: "Try again",
+    noPastEvents: "No past events",
+    noUpcomingEvents: "No upcoming events",
     
     // Languages
     languages: {
@@ -120,6 +144,18 @@ export const translations = {
     loadingEvents: "Laddar evenemang...",
     noEvents: "Inga kommande evenemang",
     refreshEvents: "Uppdatera evenemang",
+    upcomingSchedule: "Kommande Schema",
+    pastEvents: "Tidigare Evenemang",
+    upcomingTasks: "Kommande uppgifter och ansvar",
+    pastTasks: "Tidigare uppgifter och ansvar",
+    showMore: "Visa alla",
+    showLess: "Visa mindre",
+    moreEvents: "fler",
+    loadingFromSheets: "Laddar schema från Google Sheets...",
+    errorLoadingSheets: "Fel vid laddning av schema från Google Sheets",
+    tryAgain: "Försök igen",
+    noPastEvents: "Inga tidigare evenemang",
+    noUpcomingEvents: "Inga kommande evenemang",
     
     // Languages
     languages: {
@@ -163,6 +199,18 @@ export const translations = {
     loadingEvents: "تحميل الأحداث...",
     noEvents: "لا توجد أحداث قادمة",
     refreshEvents: "تحديث الأحداث",
+    upcomingSchedule: "الجدول الزمني القادم",
+    pastEvents: "الأحداث السابقة",
+    upcomingTasks: "المهام والمسؤوليات القادمة",
+    pastTasks: "المهام والمسؤوليات السابقة",
+    showMore: "عرض الكل",
+    showLess: "عرض أقل",
+    moreEvents: "المزيد",
+    loadingFromSheets: "تحميل الجدول من Google Sheets...",
+    errorLoadingSheets: "خطأ في تحميل الجدول من Google Sheets",
+    tryAgain: "حاول مرة أخرى",
+    noPastEvents: "لا توجد أحداث سابقة",
+    noUpcomingEvents: "لا توجد أحداث قادمة",
     
     // Languages
     languages: {
