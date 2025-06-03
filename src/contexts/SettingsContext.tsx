@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
 interface SettingsContextType {
@@ -8,6 +7,12 @@ interface SettingsContextType {
   setUserName: (name: string) => void;
   language: string;
   setLanguage: (language: string) => void;
+  showVolunteers: boolean;
+  setShowVolunteers: (show: boolean) => void;
+  showBackup: boolean;
+  setShowBackup: (show: boolean) => void;
+  showNotes: boolean;
+  setShowNotes: (show: boolean) => void;
 }
 
 const SettingsContext = createContext<SettingsContextType | undefined>(undefined);
@@ -23,7 +28,6 @@ export const useSettings = () => {
 export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [isDarkMode, setIsDarkMode] = useState(() => {
     const saved = localStorage.getItem('darkMode');
-    // Default to false instead of checking system preference
     return saved ? JSON.parse(saved) : false;
   });
 
@@ -33,6 +37,21 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
   const [language, setLanguageState] = useState(() => {
     return localStorage.getItem('language') || 'fi';
+  });
+
+  const [showVolunteers, setShowVolunteersState] = useState(() => {
+    const saved = localStorage.getItem('showVolunteers');
+    return saved ? JSON.parse(saved) : true;
+  });
+
+  const [showBackup, setShowBackupState] = useState(() => {
+    const saved = localStorage.getItem('showBackup');
+    return saved ? JSON.parse(saved) : true;
+  });
+
+  const [showNotes, setShowNotesState] = useState(() => {
+    const saved = localStorage.getItem('showNotes');
+    return saved ? JSON.parse(saved) : true;
   });
 
   useEffect(() => {
@@ -52,6 +71,18 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     localStorage.setItem('language', language);
   }, [language]);
 
+  useEffect(() => {
+    localStorage.setItem('showVolunteers', JSON.stringify(showVolunteers));
+  }, [showVolunteers]);
+
+  useEffect(() => {
+    localStorage.setItem('showBackup', JSON.stringify(showBackup));
+  }, [showBackup]);
+
+  useEffect(() => {
+    localStorage.setItem('showNotes', JSON.stringify(showNotes));
+  }, [showNotes]);
+
   const toggleDarkMode = () => {
     setIsDarkMode(!isDarkMode);
   };
@@ -64,6 +95,18 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     setLanguageState(lang);
   };
 
+  const setShowVolunteers = (show: boolean) => {
+    setShowVolunteersState(show);
+  };
+
+  const setShowBackup = (show: boolean) => {
+    setShowBackupState(show);
+  };
+
+  const setShowNotes = (show: boolean) => {
+    setShowNotesState(show);
+  };
+
   return (
     <SettingsContext.Provider value={{ 
       isDarkMode, 
@@ -71,7 +114,13 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       userName, 
       setUserName, 
       language, 
-      setLanguage 
+      setLanguage,
+      showVolunteers,
+      setShowVolunteers,
+      showBackup,
+      setShowBackup,
+      showNotes,
+      setShowNotes
     }}>
       {children}
     </SettingsContext.Provider>

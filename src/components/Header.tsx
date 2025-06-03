@@ -1,14 +1,15 @@
-
 import { useState } from 'react';
 import { useSettings } from '@/contexts/SettingsContext';
 import { Bell } from 'lucide-react';
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import ProfileView from './ProfileView';
+import { useTranslation, Language } from '@/utils/translations';
 
 const Header = () => {
-  const { userName } = useSettings();
+  const { userName, language } = useSettings();
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const t = useTranslation(language as Language);
   const initials = userName ? userName.charAt(0).toUpperCase() : "S";
 
   return (
@@ -23,8 +24,8 @@ const Header = () => {
             />
           </div>
           <div>
-            <h1 className="text-xl font-bree font-bold">SRO Tech</h1>
-            <p className="text-white/80 text-xs font-light">Raamattuopisto</p>
+            <h1 className="text-xl font-bree font-bold">{t.appTitle}</h1>
+            <p className="text-white/80 text-xs font-light">{t.appSubtitle}</p>
           </div>
         </div>
 
