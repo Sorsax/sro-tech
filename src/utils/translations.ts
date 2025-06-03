@@ -3,7 +3,7 @@ export const translations = {
   fi: {
     // Header
     headerTitle: "SRO Tech",
-    headerSubtitle: "Raamattuopisto",
+    headerSubtitle: "paikkamerkki",
     
     // Settings
     settings: "Asetukset",
@@ -58,7 +58,7 @@ export const translations = {
   en: {
     // Header
     headerTitle: "SRO Tech",
-    headerSubtitle: "Bible Institute",
+    headerSubtitle: "Placeholer Institute",
     
     // Settings
     settings: "Settings",
@@ -113,7 +113,7 @@ export const translations = {
   sv: {
     // Header
     headerTitle: "SRO Tech",
-    headerSubtitle: "Bibelskola",
+    headerSubtitle: "platshållare",
     
     // Settings
     settings: "Inställningar",
@@ -168,7 +168,7 @@ export const translations = {
   ar: {
     // Header
     headerTitle: "SRO Tech",
-    headerSubtitle: "معهد الكتاب المقدس",
+    headerSubtitle: "العنصر النائب",
     
     // Settings
     settings: "الإعدادات",
