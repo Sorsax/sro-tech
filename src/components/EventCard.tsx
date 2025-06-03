@@ -1,7 +1,7 @@
+
 import { Calendar, Users, UserCheck, StickyNote, UserPlus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useSettings } from '@/contexts/SettingsContext';
-import { useTranslation, Language, translateSheetData } from '@/utils/translations';
 import { useState } from 'react';
 
 interface EventCardProps {
@@ -14,9 +14,8 @@ interface EventCardProps {
 }
 
 const EventCard = ({ date, event, volunteers, backup, notes, onOptIn }: EventCardProps) => {
-  const { userName, language, showVolunteers, showBackup, showNotes } = useSettings();
+  const { userName } = useSettings();
   const [isOptingIn, setIsOptingIn] = useState(false);
-  const t = useTranslation(language as Language);
 
   const formatDate = (dateStr: string) => {
     try {
@@ -49,7 +48,7 @@ const EventCard = ({ date, event, volunteers, backup, notes, onOptIn }: EventCar
 
   const handleOptIn = async () => {
     if (!userName.trim()) {
-      alert(t.setNameFirst);
+      alert('Aseta ensin nimesi asetuksista ennen ilmoittautumista!');
       return;
     }
 
@@ -69,12 +68,6 @@ const EventCard = ({ date, event, volunteers, backup, notes, onOptIn }: EventCar
   const isFutureEvent = isEventInFuture(date);
   const isUserAlreadyVolunteering = volunteers.toLowerCase().includes(userName.toLowerCase()) && userName.trim() !== '';
 
-  // Translate sheet data based on selected language
-  const translatedEvent = translateSheetData(event, language as Language);
-  const translatedVolunteers = translateSheetData(volunteers, language as Language);
-  const translatedBackup = translateSheetData(backup, language as Language);
-  const translatedNotes = translateSheetData(notes, language as Language);
-
   return (
     <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4 mb-4 animate-fade-in hover:shadow-md transition-shadow">
       {/* Date Section */}
@@ -86,7 +79,7 @@ const EventCard = ({ date, event, volunteers, backup, notes, onOptIn }: EventCar
         </div>
         <div className="flex-1">
           <h3 className="text-lg font-semibold text-sro-granite dark:text-white mb-1 leading-tight">
-            {translatedEvent}
+            {event}
           </h3>
           <div className="flex items-center text-sm text-gray-500 dark:text-gray-400">
             <Calendar className="h-4 w-4 mr-1" />
@@ -97,32 +90,32 @@ const EventCard = ({ date, event, volunteers, backup, notes, onOptIn }: EventCar
 
       {/* Details Section */}
       <div className="space-y-3">
-        {showVolunteers && translatedVolunteers && (
+        {volunteers && (
           <div className="flex items-start space-x-3">
             <Users className="h-4 w-4 text-sro-olive mt-0.5 flex-shrink-0" />
             <div>
-              <div className="text-sm font-medium text-sro-granite dark:text-white">{t.volunteers}</div>
-              <div className="text-sm text-gray-600 dark:text-gray-300">{translatedVolunteers}</div>
+              <div className="text-sm font-medium text-sro-granite dark:text-white">Vapaaehtoiset</div>
+              <div className="text-sm text-gray-600 dark:text-gray-300">{volunteers}</div>
             </div>
           </div>
         )}
 
-        {showBackup && translatedBackup && (
+        {backup && (
           <div className="flex items-start space-x-3">
             <UserCheck className="h-4 w-4 text-sro-olive mt-0.5 flex-shrink-0" />
             <div>
-              <div className="text-sm font-medium text-sro-granite dark:text-white">{t.backup}</div>
-              <div className="text-sm text-gray-600 dark:text-gray-300">{translatedBackup}</div>
+              <div className="text-sm font-medium text-sro-granite dark:text-white">Varahenkilö</div>
+              <div className="text-sm text-gray-600 dark:text-gray-300">{backup}</div>
             </div>
           </div>
         )}
 
-        {showNotes && translatedNotes && (
+        {notes && (
           <div className="flex items-start space-x-3">
             <StickyNote className="h-4 w-4 text-sro-olive mt-0.5 flex-shrink-0" />
             <div>
-              <div className="text-sm font-medium text-sro-granite dark:text-white">{t.notes}</div>
-              <div className="text-sm text-gray-600 dark:text-gray-300">{translatedNotes}</div>
+              <div className="text-sm font-medium text-sro-granite dark:text-white">Lisätiedot</div>
+              <div className="text-sm text-gray-600 dark:text-gray-300">{notes}</div>
             </div>
           </div>
         )}
@@ -137,7 +130,7 @@ const EventCard = ({ date, event, volunteers, backup, notes, onOptIn }: EventCar
               className="w-full bg-sro-olive hover:bg-sro-olive/90 text-white"
             >
               <UserPlus className="h-4 w-4 mr-2" />
-              {isOptingIn ? t.optingIn : t.optIn}
+              {isOptingIn ? 'Ilmoittaudutaan...' : 'Ilmoittaudu vapaaehtoiseksi'}
             </Button>
           </div>
         )}
@@ -146,7 +139,7 @@ const EventCard = ({ date, event, volunteers, backup, notes, onOptIn }: EventCar
           <div className="pt-2 border-t border-gray-100 dark:border-gray-600">
             <div className="text-sm text-sro-olive font-medium flex items-center">
               <UserCheck className="h-4 w-4 mr-2" />
-              {t.alreadyVolunteering}
+              Olet jo ilmoittautunut tähän tapahtumaan
             </div>
           </div>
         )}
