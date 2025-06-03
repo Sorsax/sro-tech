@@ -9,7 +9,7 @@ interface EventCardProps {
   volunteers: string;
   backup: string;
   notes: string;
-  onOptIn?: (date: string, name: string) => void;
+  onOptIn?: (date: string, name: string) => void; 
 }
 
 const EventCard = ({ date, event, volunteers, backup, notes, onOptIn }: EventCardProps) => {
