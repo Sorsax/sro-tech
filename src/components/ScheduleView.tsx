@@ -1,9 +1,10 @@
-
 import { useState, useEffect } from 'react';
 import EventCard from './EventCard';
 import { RefreshCw, Wifi, Calendar, Clock, History, ChevronDown, Plus } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import { Button } from '@/components/ui/button';
+import { useSettings } from '@/utils/settings';
+import { useTranslation, Language } from '@/utils/translations';
 
 interface ScheduleItem {
   date: string;
@@ -15,6 +16,8 @@ interface ScheduleItem {
 
 const ScheduleView = () => {
   const { toast } = useToast();
+  const { language } = useSettings();
+  const t = useTranslation(language as Language);
   const [scheduleData, setScheduleData] = useState<ScheduleItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -167,8 +170,8 @@ const ScheduleView = () => {
       setScheduleData(updatedData);
       
       toast({
-        title: "Ilmoittautuminen onnistui!",
-        description: `Olet nyt ilmoittautunut tapahtumaan: ${eventName}`,
+        title: t.optInSuccess,
+        description: `${t.optInSuccessDesc}: ${eventName}`,
       });
       
       console.log('Opt-in successful!');
@@ -176,8 +179,8 @@ const ScheduleView = () => {
     } catch (error) {
       console.error('Error during opt-in:', error);
       toast({
-        title: "Ilmoittautuminen epäonnistui",
-        description: "Tapahtui virhe ilmoittautumisessa. Yritä myöhemmin uudelleen.",
+        title: t.optInError,
+        description: t.optInErrorDesc,
         variant: "destructive",
       });
       // Revert local state on error
@@ -263,7 +266,7 @@ const ScheduleView = () => {
       <div className="px-4 py-8">
         <div className="text-center">
           <RefreshCw className="h-8 w-8 text-sro-olive mx-auto mb-4 animate-spin" />
-          <p className="text-gray-600 dark:text-gray-300">Ladataan aikataulua Google Sheetsistä...</p>
+          <p className="text-gray-600 dark:text-gray-300">{t.loadingFromSheets}</p>
         </div>
       </div>
     );
@@ -274,12 +277,12 @@ const ScheduleView = () => {
       <div className="px-4 py-8">
         <div className="text-center">
           <Wifi className="h-8 w-8 text-red-500 mx-auto mb-4" />
-          <p className="text-red-600 dark:text-red-400 mb-4">{error}</p>
+          <p className="text-red-600 dark:text-red-400 mb-4">{t.errorLoadingSheets}</p>
           <button 
             onClick={refreshData}
             className="bg-sro-olive text-white px-4 py-2 rounded-lg hover:bg-sro-olive/90 transition-colors"
           >
-            Yritä uudelleen
+            {t.tryAgain}
           </button>
         </div>
       </div>
@@ -291,10 +294,10 @@ const ScheduleView = () => {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h2 className="text-xl font-bree font-bold text-sro-granite dark:text-white">
-            {showPastEvents ? `Menneet tapahtumat ${selectedYear}` : 'Tuleva aikataulu'}
+            {showPastEvents ? `${t.pastEvents} ${selectedYear}` : t.upcomingSchedule}
           </h2>
           <p className="text-sm text-gray-600 dark:text-gray-400">
-            {showPastEvents ? 'Menneet tehtävät ja vastuuhenkilöt' : 'Tulevat tehtävät ja vastuuhenkilöt'}
+            {showPastEvents ? t.pastTasks : t.upcomingTasks}
           </p>
         </div>
         <div className="flex space-x-2">
@@ -356,7 +359,7 @@ const ScheduleView = () => {
             className="border-sro-olive text-sro-olive hover:bg-sro-olive/10"
           >
             <Plus className="h-4 w-4 mr-2" />
-            Näytä kaikki ({filteredData.length - EVENTS_TO_SHOW} lisää)
+            {t.showAll} ({filteredData.length - EVENTS_TO_SHOW} {t.more})
           </Button>
         </div>
       )}
@@ -368,7 +371,7 @@ const ScheduleView = () => {
             variant="outline" 
             className="border-sro-olive text-sro-olive hover:bg-sro-olive/10"
           >
-            Näytä vähemmän
+            {t.showLess}
           </Button>
         </div>
       )}
@@ -377,7 +380,7 @@ const ScheduleView = () => {
         <div className="text-center py-12">
           <Calendar className="h-12 w-12 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
           <p className="text-gray-500 dark:text-gray-400">
-            {showPastEvents ? 'Ei menneitä tapahtumia' : 'Ei tulevia tapahtumia'}
+            {showPastEvents ? t.noPastEvents : t.noUpcomingEvents}
           </p>
         </div>
       )}
