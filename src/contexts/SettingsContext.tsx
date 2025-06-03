@@ -6,6 +6,8 @@ interface SettingsContextType {
   toggleDarkMode: () => void;
   userName: string;
   setUserName: (name: string) => void;
+  language: string;
+  setLanguage: (language: string) => void;
 }
 
 const SettingsContext = createContext<SettingsContextType | undefined>(undefined);
@@ -29,6 +31,10 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     return localStorage.getItem('userName') || '';
   });
 
+  const [language, setLanguageState] = useState(() => {
+    return localStorage.getItem('language') || 'fi';
+  });
+
   useEffect(() => {
     localStorage.setItem('darkMode', JSON.stringify(isDarkMode));
     if (isDarkMode) {
@@ -42,6 +48,10 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     localStorage.setItem('userName', userName);
   }, [userName]);
 
+  useEffect(() => {
+    localStorage.setItem('language', language);
+  }, [language]);
+
   const toggleDarkMode = () => {
     setIsDarkMode(!isDarkMode);
   };
@@ -50,8 +60,19 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     setUserNameState(name);
   };
 
+  const setLanguage = (lang: string) => {
+    setLanguageState(lang);
+  };
+
   return (
-    <SettingsContext.Provider value={{ isDarkMode, toggleDarkMode, userName, setUserName }}>
+    <SettingsContext.Provider value={{ 
+      isDarkMode, 
+      toggleDarkMode, 
+      userName, 
+      setUserName, 
+      language, 
+      setLanguage 
+    }}>
       {children}
     </SettingsContext.Provider>
   );

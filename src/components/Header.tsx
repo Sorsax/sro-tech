@@ -1,10 +1,14 @@
 
+import { useState } from 'react';
 import { useSettings } from '@/contexts/SettingsContext';
 import { Bell } from 'lucide-react';
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import ProfileView from './ProfileView';
 
 const Header = () => {
   const { userName } = useSettings();
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
   const initials = userName ? userName.charAt(0).toUpperCase() : "S";
 
   return (
@@ -29,11 +33,18 @@ const Header = () => {
             <Bell className="h-5 w-5" />
           </button>
           
-          <Avatar className="h-8 w-8 bg-white/20 border-2 border-white/30">
-            <AvatarFallback className="text-sm font-semibold text-white bg-transparent">
-              {initials}
-            </AvatarFallback>
-          </Avatar>
+          <Sheet open={isProfileOpen} onOpenChange={setIsProfileOpen}>
+            <SheetTrigger asChild>
+              <Avatar className="h-8 w-8 bg-white/20 border-2 border-white/30 cursor-pointer hover:bg-white/30 transition-colors">
+                <AvatarFallback className="text-sm font-semibold text-white bg-transparent">
+                  {initials}
+                </AvatarFallback>
+              </Avatar>
+            </SheetTrigger>
+            <SheetContent className="w-full sm:max-w-md">
+              <ProfileView />
+            </SheetContent>
+          </Sheet>
         </div>
       </div>
     </header>
