@@ -1,13 +1,15 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { Language, getTranslation } from '@/utils/translations';
 
 interface SettingsContextType {
   isDarkMode: boolean;
   toggleDarkMode: () => void;
   userName: string;
   setUserName: (name: string) => void;
-  language: string;
-  setLanguage: (language: string) => void;
+  language: Language;
+  setLanguage: (language: Language) => void;
+  t: (key: string) => string;
 }
 
 const SettingsContext = createContext<SettingsContextType | undefined>(undefined);
@@ -23,7 +25,6 @@ export const useSettings = () => {
 export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [isDarkMode, setIsDarkMode] = useState(() => {
     const saved = localStorage.getItem('darkMode');
-    // Default to false instead of checking system preference
     return saved ? JSON.parse(saved) : false;
   });
 
@@ -31,8 +32,9 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     return localStorage.getItem('userName') || '';
   });
 
-  const [language, setLanguageState] = useState(() => {
-    return localStorage.getItem('language') || 'fi';
+  const [language, setLanguageState] = useState<Language>(() => {
+    const saved = localStorage.getItem('language') as Language;
+    return saved || 'fi';
   });
 
   useEffect(() => {
@@ -50,6 +52,14 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
   useEffect(() => {
     localStorage.setItem('language', language);
+    // Set HTML lang attribute for accessibility
+    document.documentElement.lang = language;
+    // Set RTL for Arabic
+    if (language === 'ar') {
+      document.documentElement.dir = 'rtl';
+    } else {
+      document.documentElement.dir = 'ltr';
+    }
   }, [language]);
 
   const toggleDarkMode = () => {
@@ -60,9 +70,11 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     setUserNameState(name);
   };
 
-  const setLanguage = (lang: string) => {
+  const setLanguage = (lang: Language) => {
     setLanguageState(lang);
   };
+
+  const t = (key: string) => getTranslation(language, key);
 
   return (
     <SettingsContext.Provider value={{ 
@@ -71,7 +83,8 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       userName, 
       setUserName, 
       language, 
-      setLanguage 
+      setLanguage,
+      t
     }}>
       {children}
     </SettingsContext.Provider>

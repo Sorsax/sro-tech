@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useSettings } from '@/contexts/SettingsContext';
 import { Bell } from 'lucide-react';
@@ -7,7 +6,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import ProfileView from './ProfileView';
 
 const Header = () => {
-  const { userName } = useSettings();
+  const { userName, t } = useSettings();
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const initials = userName ? userName.charAt(0).toUpperCase() : "S";
 
@@ -23,8 +22,8 @@ const Header = () => {
             />
           </div>
           <div>
-            <h1 className="text-xl font-bree font-bold">SRO Tech</h1>
-            <p className="text-white/80 text-xs font-light">Raamattuopisto</p>
+            <h1 className="text-xl font-bree font-bold">{t('headerTitle')}</h1>
+            <p className="text-white/80 text-xs font-light">{t('headerSubtitle')}</p>
           </div>
         </div>
 
