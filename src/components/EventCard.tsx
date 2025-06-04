@@ -75,12 +75,11 @@ const handleOptIn = async () => {
 
     console.log('Sending payload:', params.toString());
 
-    const response = await fetch(WEBHOOK_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
-      },
-      body: params.toString()
-    });
+ const response = await fetch(WEBHOOK_URL, {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+  body: params.toString()
+});
 
     console.log('Response status:', response.status);
 
