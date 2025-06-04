@@ -26,7 +26,7 @@ const ScheduleView = () => {
 
   // Google Sheets configuration
   const SHEET_ID = '1iZfopLSu7IxqF-15TYT21xEfvX_Q1-Z1OX8kzagGrDg';
-  // Google Apps Script webhook
+  // Google Apps Script webhook - Updated to match the provided URL
   const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbz-mdKs3K5NwqplOvV2lhQAN0a583vz-fZQWwYTQgZes6BE3zytE8HBpjpFXU6Td9pL/exec';
   
   // Available years for past events
@@ -113,20 +113,27 @@ const ScheduleView = () => {
       const rowNumber = eventIndex + 3;
       console.log(`Sending opt-in request for row ${rowNumber}`);
       
+      // Prepare the exact JSON payload format as specified
+      const payload = {
+        row: rowNumber,
+        value: userName
+      };
+      
+      console.log('Sending payload:', JSON.stringify(payload));
+      
       // Send POST request to Google Apps Script webhook
       const response = await fetch(WEBHOOK_URL, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          row: rowNumber,
-          value: userName
-        })
+        body: JSON.stringify(payload)
       });
       
+      console.log('Response status:', response.status);
+      
       if (!response.ok) {
-        throw new Error('Failed to send opt-in request');
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
 
       // Update local state for immediate feedback
