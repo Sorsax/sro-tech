@@ -5,70 +5,95 @@ import { useToast } from '@/components/ui/use-toast';
 import { Button } from '@/components/ui/button';
 import { useSettings } from '@/contexts/SettingsContext';
 
-interface ScheduleItemWithIndex extends ScheduleItem {
-  index: number;  // lisätään indeksi
+interface ScheduleItem {
+  date: string;
+  event: string;
+  volunteers: string;
+  backup: string;
+  notes: string;
 }
 
 const ScheduleView = () => {
-  // ... muut tilat ja funktiot pysyy ennallaan ...
+  const { toast } = useToast();
+  const { t } = useSettings();
+  const [scheduleData, setScheduleData] = useState<ScheduleItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [showPastEvents, setShowPastEvents] = useState(false);
+  const [selectedYear, setSelectedYear] = useState('2025');
+  const [showMore, setShowMore] = useState(false);
+  const EVENTS_TO_SHOW = 3;
 
-  // Muutetaan scheduleData-tila
-  const [scheduleData, setScheduleData] = useState<ScheduleItemWithIndex[]>([]);
-
-  // Muokataan fetchGoogleSheetData-funktiota palauttamaan indeksilliset rivit
-  const fetchGoogleSheetData = async (year: string = '2025'): Promise<ScheduleItemWithIndex[]> => {
+  // Google Sheets configuration
+  const SHEET_ID = '1iZfopLSu7IxqF-15TYT21xEfvX_Q1-Z1OX8kzagGrDg';
+  
+  // Available years for past events
+  const availableYears = ['2022', '2023', '2024', '2025'];
+  
+  const parseCSVLine = (line: string): string[] => {
+    const result: string[] = [];
+    let current = '';
+    let inQuotes = false;
+    
+    for (let i = 0; i < line.length; i++) {
+      const char = line[i];
+      
+      if (char === '"') {
+        inQuotes = !inQuotes;
+      } else if (char === ',' && !inQuotes) {
+        result.push(current.trim());
+        current = '';
+      } else {
+        current += char;
+      }
+    }
+    
+    result.push(current.trim());
+    return result;
+  };
+  
+  const fetchGoogleSheetData = async (year: string = '2025') => {
     try {
       console.log('Fetching data from Google Sheets for year:', year);
-
+      
       const csvUrl = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${year}`;
-
+      
       const response = await fetch(csvUrl);
       if (!response.ok) {
         throw new Error(`Failed to fetch sheet data for year ${year}`);
       }
-
+      
       const csvText = await response.text();
       console.log('CSV data received:', csvText);
-
+      
+      // Parse CSV data
       const lines = csvText.split('\n');
-      const data: ScheduleItemWithIndex[] = [];
-
+      const data: ScheduleItem[] = [];
+      
+      // Skip first 2 rows (index 0 and 1) and process data rows starting from row 3 (index 2)
       for (let i = 2; i < lines.length; i++) {
         const line = lines[i].trim();
         if (line) {
+          // Use proper CSV parsing to handle quoted fields with commas
           const columns = parseCSVLine(line);
-
+          
           if (columns.length >= 5 && columns[0]) {
             data.push({
               date: columns[0] || '',
               event: columns[1] || '',
               volunteers: columns[2] || '',
               backup: columns[3] || '',
-              notes: columns[4] || '',
-              index: i - 2  // indeksi aloitetaan nollasta ensimmäisestä datarivistä
+              notes: columns[4] || ''
             });
           }
         }
       }
-
-      console.log('Parsed data with indexes:', data);
+      
+      console.log('Parsed data:', data);
       return data;
     } catch (error) {
       console.error('Error fetching Google Sheets data:', error);
       throw error;
-    }
-  };
-
-  // handleOptInSuccess päivitettävä uudelle datatyypille
-  const handleOptInSuccess = (eventDate: string, userName: string) => {
-    const eventIndex = scheduleData.findIndex(item => item.date === eventDate);
-    if (eventIndex !== -1) {
-      const updatedData = [...scheduleData];
-      const currentVolunteers = updatedData[eventIndex].volunteers;
-      updatedData[eventIndex].volunteers = currentVolunteers 
-        ? `${currentVolunteers}, ${userName}` 
-        : userName;
-      setScheduleData(updatedData);
     }
   };
 
