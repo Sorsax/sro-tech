@@ -61,12 +61,18 @@ const EventCard = ({ date, event, volunteers, backup, notes, onOptInSuccess }: E
     try {
       console.log(`Attempting to opt in ${userName} for event on ${date}`);
       
-      // For now, we'll assume row 5 as an example - in a real implementation,
+      // Calculate row number based on date position in the sheet
+      // This is a simplified calculation - in a real implementation, 
       // you'd need to pass the actual row number from the parent component
-      const rowNumber = 5; // This should be passed from ScheduleView
+      const eventDateParts = date.includes('.') ? date.split('.') : date.split('/');
+      const [day, month, year] = eventDateParts;
+      const eventDate = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+      const startOfYear = new Date(2025, 0, 5); // First event is 5.1.2025
+      const daysDiff = Math.floor((eventDate.getTime() - startOfYear.getTime()) / (1000 * 60 * 60 * 24));
+      const estimatedRow = Math.max(3, Math.floor(daysDiff / 7) + 3); // Rough estimate based on weekly events
       
       const payload = {
-        row: rowNumber,
+        row: estimatedRow.toString(),
         value: userName
       };
       
@@ -165,14 +171,14 @@ const EventCard = ({ date, event, volunteers, backup, notes, onOptInSuccess }: E
           </div>
         )}
 
-        {/* Opt-in Button for Future Events - Now with explicit responsive classes */}
+        {/* Opt-in Button for Future Events */}
         {isFutureEvent && userName.trim() && !isUserAlreadyVolunteering && (
           <div className="pt-2 border-t border-gray-100 dark:border-gray-600 w-full">
             <Button 
               onClick={handleOptIn}
               disabled={isOptingIn}
               size="sm"
-              className="w-full bg-sro-olive hover:bg-sro-olive/90 text-white block sm:block md:block lg:block xl:block"
+              className="w-full bg-sro-olive hover:bg-sro-olive/90 text-white"
             >
               <UserPlus className="h-4 w-4 mr-2" />
               {isOptingIn ? t('optingIn') : t('optInButton')}
