@@ -1,9 +1,7 @@
-
 import { Calendar, Users, UserCheck, StickyNote, UserPlus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useSettings } from '@/contexts/SettingsContext';
 import { useState } from 'react';
-import { useToast } from '@/components/ui/use-toast';
 
 interface EventCardProps {
   date: string;
@@ -11,80 +9,12 @@ interface EventCardProps {
   volunteers: string;
   backup: string;
   notes: string;
-  eventIndex: number;
-  onOptInSuccess: (eventIndex: number, newVolunteers: string) => void;
+  onOptIn?: (date: string, name: string) => void; 
 }
 
-const EventCard = ({ date, event, volunteers, backup, notes, eventIndex, onOptInSuccess }: EventCardProps) => {
+const EventCard = ({ date, event, volunteers, backup, notes, onOptIn }: EventCardProps) => {
   const { userName, t } = useSettings();
-  const { toast } = useToast();
   const [isOptingIn, setIsOptingIn] = useState(false);
-
-  // Google Apps Script webhook
-  const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbz-mdKs3K5NwqplOvV2lhQAN0a583vz-fZQWwYTQgZes6BE3zytE8HBpjpFXU6Td9pL/exec';
-
-  const handleOptIn = async () => {
-    if (!userName.trim()) {
-      alert(t('setNameFirst'));
-      return;
-    }
-
-    setIsOptingIn(true);
-    try {
-      console.log(`Attempting to opt in ${userName} for event on ${date}`);
-      
-      // Calculate the row number (add 3 to account for header rows and 0-based index)
-      const rowNumber = eventIndex + 3;
-      console.log(`Sending opt-in request for row ${rowNumber}`);
-      
-      // Prepare the exact JSON payload format as specified
-      const payload = {
-        row: rowNumber,
-        value: userName
-      };
-      
-      console.log('Sending payload:', JSON.stringify(payload));
-      
-      // Send POST request to Google Apps Script webhook
-      const response = await fetch(WEBHOOK_URL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload)
-      });
-      
-      console.log('Response status:', response.status);
-      
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      // Update parent component state for immediate feedback
-      const currentVolunteers = volunteers;
-      const updatedVolunteers = currentVolunteers 
-        ? `${currentVolunteers}, ${userName}` 
-        : userName;
-      onOptInSuccess(eventIndex, updatedVolunteers);
-      
-      toast({
-        title: t('optInSuccess') || "Ilmoittautuminen onnistui!",
-        description: `${t('optInSuccessDesc') || "Olet nyt ilmoittautunut tapahtumaan"}: ${event}`,
-      });
-      
-      console.log('Opt-in successful!');
-      
-    } catch (error) {
-      console.error('Error during opt-in:', error);
-      toast({
-        title: t('optInError') || "Ilmoittautuminen epäonnistui",
-        description: t('optInErrorDesc') || "Tapahtui virhe ilmoittautumisessa. Yritä myöhemmin uudelleen.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsOptingIn(false);
-    }
-  };
 
   const formatDate = (dateStr: string) => {
     try {
@@ -112,6 +42,24 @@ const EventCard = ({ date, event, volunteers, backup, notes, eventIndex, onOptIn
       return eventDate >= today;
     } catch {
       return true;
+    }
+  };
+
+  const handleOptIn = async () => {
+    if (!userName.trim()) {
+      alert(t('setNameFirst'));
+      return;
+    }
+
+    setIsOptingIn(true);
+    try {
+      if (onOptIn) {
+        await onOptIn(date, userName);
+      }
+    } catch (error) {
+      console.error('Error opting in:', error);
+    } finally {
+      setIsOptingIn(false);
     }
   };
 
