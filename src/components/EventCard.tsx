@@ -20,7 +20,7 @@ const EventCard = ({ date, event, volunteers, backup, notes, onOptInSuccess }: E
   const [isOptingIn, setIsOptingIn] = useState(false);
 
   // Google Apps Script webhook URL
-  const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbz-mdKs3K5NwqplOvV2lhQAN0a583vz-fZQWwYTQgZes6BE3zytE8HBpjpFXU6Td9pL/exec';
+  const WEBHOOK_URL = 'https://cors-anywhere.herokuapp.com/https://script.google.com/macros/s/AKfycbz-mdKs3K5NwqplOvV2lhQAN0a583vz-fZQWwYTQgZes6BE3zytE8HBpjpFXU6Td9pL/exec';
 
   const formatDate = (dateStr: string) => {
     try {
