@@ -66,20 +66,20 @@ const handleOptIn = async () => {
     const eventDate = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
     const startOfYear = new Date(2025, 0, 5); // Ensimmäinen tapahtuma
     const daysDiff = Math.floor((eventDate.getTime() - startOfYear.getTime()) / (1000 * 60 * 60 * 24));
-    const estimatedRow = Math.max(3, Math.floor(daysDiff / 7) + 3); 
+    const estimatedRow = Math.max(3, Math.floor(daysDiff / 7) + 3);
 
-    const params = new URLSearchParams({
-      row: estimatedRow.toString(),
+    const payload = {
+      row: estimatedRow,
       value: userName
+    };
+
+    console.log('Sending payload:', JSON.stringify(payload));
+
+    const response = await fetch(WEBHOOK_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
     });
-
-    console.log('Sending payload:', params.toString());
-
- const response = await fetch(WEBHOOK_URL, {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-  body: params.toString()
-});
 
     console.log('Response status:', response.status);
 
