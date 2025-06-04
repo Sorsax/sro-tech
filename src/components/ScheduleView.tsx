@@ -52,44 +52,50 @@ const ScheduleView = () => {
     return result;
   };
   
-const fetchGoogleSheetData = async (year: string = '2025') => {
-  try {
-    const url = `${SHEET_URL}?sheet=${year}`;
-
-    const response = await fetch(url);
-    if (!response.ok) {
-      throw new Error(`Failed to fetch sheet data for year ${year}`);
-    }
-
-    const csvText = await response.text();
-
-    const lines = csvText.split('\n');
-    const data: ScheduleItem[] = [];
-
-    // Oletetaan, että rivit 0 ja 1 ovat otsikot tai jotain, aloitetaan datasta riviltä 2
-    for (let i = 2; i < lines.length; i++) {
-      const line = lines[i].trim();
-      if (!line) continue;
-
-      const columns = parseCSVLine(line);
-
-      if (columns.length >= 5 && columns[0]) {
-        data.push({
-          date: columns[0],
-          event: columns[1],
-          volunteers: columns[2],
-          backup: columns[3],
-          notes: columns[4],
-        });
+  const fetchGoogleSheetData = async (year: string = '2025') => {
+    try {
+      console.log('Fetching data from Google Sheets for year:', year);
+      
+      const csvUrl = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${year}`;
+      
+      const response = await fetch(csvUrl);
+      if (!response.ok) {
+        throw new Error(`Failed to fetch sheet data for year ${year}`);
       }
+      
+      const csvText = await response.text();
+      console.log('CSV data received:', csvText);
+      
+      // Parse CSV data
+      const lines = csvText.split('\n');
+      const data: ScheduleItem[] = [];
+      
+      // Skip first 2 rows (index 0 and 1) and process data rows starting from row 3 (index 2)
+      for (let i = 2; i < lines.length; i++) {
+        const line = lines[i].trim();
+        if (line) {
+          // Use proper CSV parsing to handle quoted fields with commas
+          const columns = parseCSVLine(line);
+          
+          if (columns.length >= 5 && columns[0]) {
+            data.push({
+              date: columns[0] || '',
+              event: columns[1] || '',
+              volunteers: columns[2] || '',
+              backup: columns[3] || '',
+              notes: columns[4] || ''
+            });
+          }
+        }
+      }
+      
+      console.log('Parsed data:', data);
+      return data;
+    } catch (error) {
+      console.error('Error fetching Google Sheets data:', error);
+      throw error;
     }
-
-    return data;
-  } catch (error) {
-    console.error(error);
-    throw error;
-  }
-};
+  };
 
   const handleOptInSuccess = (eventDate: string, userName: string) => {
     // Find the event in current data and update it locally for immediate feedback
