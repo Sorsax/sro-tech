@@ -77,8 +77,7 @@ const handleOptIn = async () => {
 
     const response = await fetch(WEBHOOK_URL, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' }
-        'Content-Type': 'application/x-www-form-urlencoded',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
       },
       body: params.toString()
     });
