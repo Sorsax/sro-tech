@@ -51,69 +51,66 @@ const EventCard = ({ date, event, volunteers, backup, notes, onOptInSuccess }: E
     }
   };
 
-  const handleOptIn = async () => {
-    if (!userName.trim()) {
-      alert(t('setNameFirst'));
-      return;
+const handleOptIn = async () => {
+  if (!userName.trim()) {
+    alert(t('setNameFirst'));
+    return;
+  }
+
+  setIsOptingIn(true);
+  try {
+    console.log(`Attempting to opt in ${userName} for event on ${date}`);
+
+    const eventDateParts = date.includes('.') ? date.split('.') : date.split('/');
+    const [day, month, year] = eventDateParts;
+    const eventDate = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+    const startOfYear = new Date(2025, 0, 5); // Ensimmäinen tapahtuma
+    const daysDiff = Math.floor((eventDate.getTime() - startOfYear.getTime()) / (1000 * 60 * 60 * 24));
+    const estimatedRow = Math.max(3, Math.floor(daysDiff / 7) + 3); 
+
+    const params = new URLSearchParams({
+      row: estimatedRow.toString(),
+      value: userName
+    });
+
+    console.log('Sending payload:', params.toString());
+
+    const response = await fetch(WEBHOOK_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: params.toString()
+    });
+
+    console.log('Response status:', response.status);
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
     }
 
-    setIsOptingIn(true);
-    try {
-      console.log(`Attempting to opt in ${userName} for event on ${date}`);
-      
-      // Calculate row number based on date position in the sheet
-      // This is a simplified calculation - in a real implementation, 
-      // you'd need to pass the actual row number from the parent component
-      const eventDateParts = date.includes('.') ? date.split('.') : date.split('/');
-      const [day, month, year] = eventDateParts;
-      const eventDate = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
-      const startOfYear = new Date(2025, 0, 5); // First event is 5.1.2025
-      const daysDiff = Math.floor((eventDate.getTime() - startOfYear.getTime()) / (1000 * 60 * 60 * 24));
-      const estimatedRow = Math.max(3, Math.floor(daysDiff / 7) + 3); // Rough estimate based on weekly events
-      
-      const payload = {
-        row: estimatedRow.toString(),
-        value: userName
-      };
-      
-      console.log('Sending payload:', JSON.stringify(payload));
-      
-      const response = await fetch(WEBHOOK_URL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload)
-      });
-      
-      console.log('Response status:', response.status);
-      
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      
-      toast({
-        title: t('optInSuccess') || "Ilmoittautuminen onnistui!",
-        description: `${t('optInSuccessDesc') || "Olet nyt ilmoittautunut tapahtumaan"}: ${event}`,
-      });
-      
-      if (onOptInSuccess) {
-        onOptInSuccess(date, userName);
-      }
-      
-      console.log('Opt-in successful!');
-      
-    } catch (error) {
-      console.error('Error during opt-in:', error);
-      toast({
-        title: t('optInError') || "Ilmoittautuminen epäonnistui",
-        description: t('optInErrorDesc') || "Tapahtui virhe ilmoittautumisessa. Yritä myöhemmin uudelleen.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsOptingIn(false);
+    toast({
+      title: t('optInSuccess') || "Ilmoittautuminen onnistui!",
+      description: `${t('optInSuccessDesc') || "Olet nyt ilmoittautunut tapahtumaan"}: ${event}`,
+    });
+
+    if (onOptInSuccess) {
+      onOptInSuccess(date, userName);
     }
-  };
+
+    console.log('Opt-in successful!');
+
+  } catch (error) {
+    console.error('Error during opt-in:', error);
+    toast({
+      title: t('optInError') || "Ilmoittautuminen epäonnistui",
+      description: t('optInErrorDesc') || "Tapahtui virhe ilmoittautumisessa. Yritä myöhemmin uudelleen.",
+      variant: "destructive",
+    });
+  } finally {
+    setIsOptingIn(false);
+  }
+};
 
   const formattedDate = formatDate(date);
   const isFutureEvent = isEventInFuture(date);
