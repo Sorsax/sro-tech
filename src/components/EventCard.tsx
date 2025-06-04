@@ -59,29 +59,22 @@ const handleOptIn = async () => {
 
   setIsOptingIn(true);
   try {
-    console.log(`Attempting to opt in ${userName} for event on ${date}`);
-
     const eventDateParts = date.includes('.') ? date.split('.') : date.split('/');
     const [day, month, year] = eventDateParts;
     const eventDate = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
-    const startOfYear = new Date(2025, 0, 5); // Ensimmäinen tapahtuma
-    const daysDiff = Math.floor((eventDate.getTime() - startOfYear.getTime()) / (1000 * 60 * 60 * 24));
-    const estimatedRow = Math.max(4, Math.floor(daysDiff / 7) + 4);
+
+    const row = 4 + eventIndex;
 
     const payload = {
-      row: estimatedRow,
+      row,
       value: userName
     };
-
-    console.log('Sending payload:', JSON.stringify(payload));
 
     const response = await fetch(WEBHOOK_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
     });
-
-    console.log('Response status:', response.status);
 
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
@@ -96,10 +89,7 @@ const handleOptIn = async () => {
       onOptInSuccess(date, userName);
     }
 
-    console.log('Opt-in successful!');
-
   } catch (error) {
-    console.error('Error during opt-in:', error);
     toast({
       title: t('optInError') || "Ilmoittautuminen epäonnistui",
       description: t('optInErrorDesc') || "Tapahtui virhe ilmoittautumisessa. Yritä myöhemmin uudelleen.",
@@ -109,6 +99,7 @@ const handleOptIn = async () => {
     setIsOptingIn(false);
   }
 };
+
 
   const formattedDate = formatDate(date);
   const isFutureEvent = isEventInFuture(date);
