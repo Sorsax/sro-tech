@@ -26,8 +26,8 @@ const ScheduleView = () => {
 
   // Google Sheets configuration
   const SHEET_ID = '1iZfopLSu7IxqF-15TYT21xEfvX_Q1-Z1OX8kzagGrDg';
-  // Sheet2API endpoint
-  const SHEET2API_URL = 'https://sheet2api.com/v1/1sL40Z6CTCuS/sro-striimaustiimin-kalenteri';
+  // Google Apps Script webhook
+  const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbz-mdKs3K5NwqplOvV2lhQAN0a583vz-fZQWwYTQgZes6BE3zytE8HBpjpFXU6Td9pL/exec';
   
   // Available years for past events
   const availableYears = ['2022', '2023', '2024', '2025'];
@@ -99,77 +99,47 @@ const ScheduleView = () => {
     }
   };
 
-  const findRowNumberForEvent = async (eventDate: string, eventName: string) => {
+  const handleOptIn = async (eventDate: string, userName: string) => {
     try {
-      // Fetch all data to find the row index
-      const response = await fetch(`${SHEET2API_URL}/Sheet1`);
-      if (!response.ok) {
-        throw new Error('Failed to fetch data for row lookup');
-      }
-      
-      const data = await response.json();
-      
-      // Find the index of the event in the data
-      const eventIndex = data.findIndex((item: any) => 
-        item.Päivämäärä === eventDate && item.Tapahtuma === eventName
-      );
-      
-      if (eventIndex === -1) {
-        throw new Error('Event not found in the sheet');
-      }
-      
-      // Add 3 to account for header rows (Sheet2API row numbers start from 1, and there are 2 header rows)
-      return eventIndex + 3;
-    } catch (error) {
-      console.error('Error finding row number:', error);
-      throw error;
-    }
-  };
-
-  const handleOptIn = async (eventDate: string, eventName: string, userName: string) => {
-    try {
-      setLoading(true);
       console.log(`Attempting to opt in ${userName} for event on ${eventDate}`);
       
-      // Find the event in current data
-      const eventIndex = scheduleData.findIndex(item => item.date === eventDate && item.event === eventName);
+      // Find the event in current data to get its index
+      const eventIndex = scheduleData.findIndex(item => item.date === eventDate);
       if (eventIndex === -1) {
         throw new Error('Event not found');
       }
 
-      // Find the row number in the Google Sheet
-      const rowNumber = await findRowNumberForEvent(eventDate, eventName);
-      console.log(`Found event at row ${rowNumber}`);
+      // Calculate the row number (add 3 to account for header rows and 0-based index)
+      const rowNumber = eventIndex + 3;
+      console.log(`Sending opt-in request for row ${rowNumber}`);
       
-      // Get current volunteers
-      const currentVolunteers = scheduleData[eventIndex].volunteers;
-      const updatedVolunteers = currentVolunteers 
-        ? `${currentVolunteers}, ${userName}` 
-        : userName;
-      
-      // Update Google Sheet via Sheet2API
-      const updateResponse = await fetch(`${SHEET2API_URL}/Sheet1/${rowNumber}`, {
-        method: 'PATCH',
+      // Send POST request to Google Apps Script webhook
+      const response = await fetch(WEBHOOK_URL, {
+        method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          'Vapaaehtoiset': updatedVolunteers
+          row: rowNumber,
+          value: userName
         })
       });
       
-      if (!updateResponse.ok) {
-        throw new Error('Failed to update the sheet');
+      if (!response.ok) {
+        throw new Error('Failed to send opt-in request');
       }
 
-      // Update local state for better UX
+      // Update local state for immediate feedback
       const updatedData = [...scheduleData];
-      updatedData[eventIndex].volunteers = updatedVolunteers;
+      const currentVolunteers = updatedData[eventIndex].volunteers;
+      updatedData[eventIndex].volunteers = currentVolunteers 
+        ? `${currentVolunteers}, ${userName}` 
+        : userName;
       setScheduleData(updatedData);
       
       toast({
-        title: "Ilmoittautuminen onnistui!",
-        description: `Olet nyt ilmoittautunut tapahtumaan: ${eventName}`,
+        title: t('optInSuccess') || "Ilmoittautuminen onnistui!",
+        description: `${t('optInSuccessDesc') || "Olet nyt ilmoittautunut tapahtumaan"}: ${scheduleData[eventIndex].event}`,
       });
       
       console.log('Opt-in successful!');
@@ -177,14 +147,10 @@ const ScheduleView = () => {
     } catch (error) {
       console.error('Error during opt-in:', error);
       toast({
-        title: "Ilmoittautuminen epäonnistui",
-        description: "Tapahtui virhe ilmoittautumisessa. Yritä myöhemmin uudelleen.",
+        title: t('optInError') || "Ilmoittautuminen epäonnistui",
+        description: t('optInErrorDesc') || "Tapahtui virhe ilmoittautumisessa. Yritä myöhemmin uudelleen.",
         variant: "destructive",
       });
-      // Revert local state on error
-      refreshData();
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -344,7 +310,7 @@ const ScheduleView = () => {
             volunteers={item.volunteers}
             backup={item.backup}
             notes={item.notes}
-            onOptIn={(date, name) => handleOptIn(date, item.event, name)}
+            onOptIn={(date, name) => handleOptIn(date, name)}
           />
         ))}
       </div>

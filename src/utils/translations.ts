@@ -27,6 +27,10 @@ export const translations = {
     optingIn: "Ilmoittaudutaan...",
     alreadyOptedIn: "Olet jo ilmoittautunut tähän tapahtumaan",
     setNameFirst: "Aseta ensin nimesi asetuksista ennen ilmoittautumista!",
+    optInSuccess: "Ilmoittautuminen onnistui!",
+    optInSuccessDesc: "Olet nyt ilmoittautunut tapahtumaan",
+    optInError: "Ilmoittautuminen epäonnistui",
+    optInErrorDesc: "Tapahtui virhe ilmoittautumisessa. Yritä myöhemmin uudelleen.",
     
     // Schedule
     schedule: "Aikataulu",
@@ -82,6 +86,10 @@ export const translations = {
     optingIn: "Signing up...",
     alreadyOptedIn: "You are already signed up for this event",
     setNameFirst: "Please set your name in settings before signing up!",
+    optInSuccess: "Sign-up successful!",
+    optInSuccessDesc: "You are now signed up for the event",
+    optInError: "Sign-up failed",
+    optInErrorDesc: "An error occurred during sign-up. Please try again later.",
     
     // Schedule
     schedule: "Schedule",
@@ -137,6 +145,10 @@ export const translations = {
     optingIn: "Anmäler...",
     alreadyOptedIn: "Du är redan anmäld till detta evenemang",
     setNameFirst: "Vänligen ange ditt namn i inställningarna innan anmälan!",
+    optInSuccess: "Anmälan lyckades!",
+    optInSuccessDesc: "Du är nu anmäld till evenemanget",
+    optInError: "Anmälan misslyckades",
+    optInErrorDesc: "Ett fel uppstod vid anmälan. Försök igen senare.",
     
     // Schedule
     schedule: "Schema",
@@ -192,6 +204,10 @@ export const translations = {
     optingIn: "جاري التسجيل...",
     alreadyOptedIn: "أنت مسجل بالفعل في هذا الحدث",
     setNameFirst: "يرجى تعيين اسمك في الإعدادات قبل التسجيل!",
+    optInSuccess: "نجح التسجيل!",
+    optInSuccessDesc: "أنت الآن مسجل في الحدث",
+    optInError: "فشل التسجيل",
+    optInErrorDesc: "حدث خطأ أثناء التسجيل. حاول مرة أخرى لاحقاً.",
     
     // Schedule
     schedule: "الجدول الزمني",
