@@ -1,4 +1,3 @@
-
 import { Calendar, Users, UserCheck, StickyNote, UserPlus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useSettings } from '@/contexts/SettingsContext';
@@ -6,6 +5,7 @@ import { useState } from 'react';
 import { useToast } from '@/components/ui/use-toast';
 
 interface EventCardProps {
+  rowNumber: number; // Uusi prop, rivinumero Google Sheetsiin
   date: string;
   event: string;
   volunteers: string;
@@ -14,7 +14,7 @@ interface EventCardProps {
   onOptInSuccess?: (date: string, name: string) => void;
 }
 
-const EventCard = ({ date, event, volunteers, backup, notes, onOptInSuccess }: EventCardProps) => {
+const EventCard = ({ rowNumber, date, event, volunteers, backup, notes, onOptInSuccess }: EventCardProps) => {
   const { userName, t } = useSettings();
   const { toast } = useToast();
   const [isOptingIn, setIsOptingIn] = useState(false);
@@ -51,64 +51,57 @@ const EventCard = ({ date, event, volunteers, backup, notes, onOptInSuccess }: E
     }
   };
 
-const handleOptIn = async () => {
-  if (!userName.trim()) {
-    alert(t('setNameFirst'));
-    return;
-  }
-
-  setIsOptingIn(true);
-  try {
-    console.log(`Attempting to opt in ${userName} for event on ${date}`);
-
-    const eventDateParts = date.includes('.') ? date.split('.') : date.split('/');
-    const [day, month, year] = eventDateParts;
-    const eventDate = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
-    const startOfYear = new Date(2025, 0, 5); // Ensimmäinen tapahtuma
-    const daysDiff = Math.floor((eventDate.getTime() - startOfYear.getTime()) / (1000 * 60 * 60 * 24));
-    const estimatedRow = Math.max(14, Math.floor(daysDiff / 7) + 14);
-
-    const payload = {
-      row: estimatedRow,
-      value: userName
-    };
-
-    console.log('Sending payload:', JSON.stringify(payload));
-
-    const response = await fetch(WEBHOOK_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
-    });
-
-    console.log('Response status:', response.status);
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+  const handleOptIn = async () => {
+    if (!userName.trim()) {
+      alert(t('setNameFirst'));
+      return;
     }
 
-    toast({
-      title: t('optInSuccess') || "Ilmoittautuminen onnistui!",
-      description: `${t('optInSuccessDesc') || "Olet nyt ilmoittautunut tapahtumaan"}: ${event}`,
-    });
+    setIsOptingIn(true);
+    try {
+      console.log(`Attempting to opt in ${userName} for event on ${date} (row ${rowNumber})`);
 
-    if (onOptInSuccess) {
-      onOptInSuccess(date, userName);
+      const payload = {
+        row: rowNumber,
+        value: userName
+      };
+
+      console.log('Sending payload:', JSON.stringify(payload));
+
+      const response = await fetch(WEBHOOK_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      console.log('Response status:', response.status);
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      toast({
+        title: t('optInSuccess') || "Ilmoittautuminen onnistui!",
+        description: `${t('optInSuccessDesc') || "Olet nyt ilmoittautunut tapahtumaan"}: ${event}`,
+      });
+
+      if (onOptInSuccess) {
+        onOptInSuccess(date, userName);
+      }
+
+      console.log('Opt-in successful!');
+
+    } catch (error) {
+      console.error('Error during opt-in:', error);
+      toast({
+        title: t('optInError') || "Ilmoittautuminen epäonnistui",
+        description: t('optInErrorDesc') || "Tapahtui virhe ilmoittautumisessa. Yritä myöhemmin uudelleen.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsOptingIn(false);
     }
-
-    console.log('Opt-in successful!');
-
-  } catch (error) {
-    console.error('Error during opt-in:', error);
-    toast({
-      title: t('optInError') || "Ilmoittautuminen epäonnistui",
-      description: t('optInErrorDesc') || "Tapahtui virhe ilmoittautumisessa. Yritä myöhemmin uudelleen.",
-      variant: "destructive",
-    });
-  } finally {
-    setIsOptingIn(false);
-  }
-};
+  };
 
   const formattedDate = formatDate(date);
   const isFutureEvent = isEventInFuture(date);
