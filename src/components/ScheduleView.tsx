@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import EventCard from './EventCard';
 import { RefreshCw, Wifi, Calendar, Clock, History, ChevronDown, Plus } from 'lucide-react';
@@ -26,8 +27,6 @@ const ScheduleView = () => {
 
   // Google Sheets configuration
   const SHEET_ID = '1iZfopLSu7IxqF-15TYT21xEfvX_Q1-Z1OX8kzagGrDg';
-  // Google Apps Script webhook - Updated to match the provided URL
-  const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbz-mdKs3K5NwqplOvV2lhQAN0a583vz-fZQWwYTQgZes6BE3zytE8HBpjpFXU6Td9pL/exec';
   
   // Available years for past events
   const availableYears = ['2022', '2023', '2024', '2025'];
@@ -99,66 +98,10 @@ const ScheduleView = () => {
     }
   };
 
-  const handleOptIn = async (eventDate: string, userName: string) => {
-    try {
-      console.log(`Attempting to opt in ${userName} for event on ${eventDate}`);
-      
-      // Find the event in current data to get its index
-      const eventIndex = scheduleData.findIndex(item => item.date === eventDate);
-      if (eventIndex === -1) {
-        throw new Error('Event not found');
-      }
-
-      // Calculate the row number (add 3 to account for header rows and 0-based index)
-      const rowNumber = eventIndex + 3;
-      console.log(`Sending opt-in request for row ${rowNumber}`);
-      
-      // Prepare the exact JSON payload format as specified
-      const payload = {
-        row: rowNumber,
-        value: userName
-      };
-      
-      console.log('Sending payload:', JSON.stringify(payload));
-      
-      // Send POST request to Google Apps Script webhook
-      const response = await fetch(WEBHOOK_URL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload)
-      });
-      
-      console.log('Response status:', response.status);
-      
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      // Update local state for immediate feedback
-      const updatedData = [...scheduleData];
-      const currentVolunteers = updatedData[eventIndex].volunteers;
-      updatedData[eventIndex].volunteers = currentVolunteers 
-        ? `${currentVolunteers}, ${userName}` 
-        : userName;
-      setScheduleData(updatedData);
-      
-      toast({
-        title: t('optInSuccess') || "Ilmoittautuminen onnistui!",
-        description: `${t('optInSuccessDesc') || "Olet nyt ilmoittautunut tapahtumaan"}: ${scheduleData[eventIndex].event}`,
-      });
-      
-      console.log('Opt-in successful!');
-      
-    } catch (error) {
-      console.error('Error during opt-in:', error);
-      toast({
-        title: t('optInError') || "Ilmoittautuminen epäonnistui",
-        description: t('optInErrorDesc') || "Tapahtui virhe ilmoittautumisessa. Yritä myöhemmin uudelleen.",
-        variant: "destructive",
-      });
-    }
+  const handleOptInSuccess = (eventIndex: number, newVolunteers: string) => {
+    const updatedData = [...scheduleData];
+    updatedData[eventIndex].volunteers = newVolunteers;
+    setScheduleData(updatedData);
   };
 
   const isEventInFuture = (dateStr: string): boolean => {
@@ -317,7 +260,8 @@ const ScheduleView = () => {
             volunteers={item.volunteers}
             backup={item.backup}
             notes={item.notes}
-            onOptIn={(date, name) => handleOptIn(date, name)}
+            eventIndex={index}
+            onOptInSuccess={handleOptInSuccess}
           />
         ))}
       </div>
