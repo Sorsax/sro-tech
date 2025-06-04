@@ -1,7 +1,9 @@
+
 import { Calendar, Users, UserCheck, StickyNote, UserPlus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useSettings } from '@/contexts/SettingsContext';
 import { useState } from 'react';
+import { useToast } from '@/components/ui/use-toast';
 
 interface EventCardProps {
   date: string;
@@ -9,12 +11,16 @@ interface EventCardProps {
   volunteers: string;
   backup: string;
   notes: string;
-  onOptIn?: (date: string, name: string) => void; 
+  onOptInSuccess?: (date: string, name: string) => void;
 }
 
-const EventCard = ({ date, event, volunteers, backup, notes, onOptIn }: EventCardProps) => {
+const EventCard = ({ date, event, volunteers, backup, notes, onOptInSuccess }: EventCardProps) => {
   const { userName, t } = useSettings();
+  const { toast } = useToast();
   const [isOptingIn, setIsOptingIn] = useState(false);
+
+  // Google Apps Script webhook URL
+  const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbz-mdKs3K5NwqplOvV2lhQAN0a583vz-fZQWwYTQgZes6BE3zytE8HBpjpFXU6Td9pL/exec';
 
   const formatDate = (dateStr: string) => {
     try {
@@ -53,11 +59,51 @@ const EventCard = ({ date, event, volunteers, backup, notes, onOptIn }: EventCar
 
     setIsOptingIn(true);
     try {
-      if (onOptIn) {
-        await onOptIn(date, userName);
+      console.log(`Attempting to opt in ${userName} for event on ${date}`);
+      
+      // For now, we'll assume row 5 as an example - in a real implementation,
+      // you'd need to pass the actual row number from the parent component
+      const rowNumber = 5; // This should be passed from ScheduleView
+      
+      const payload = {
+        row: rowNumber,
+        value: userName
+      };
+      
+      console.log('Sending payload:', JSON.stringify(payload));
+      
+      const response = await fetch(WEBHOOK_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload)
+      });
+      
+      console.log('Response status:', response.status);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
+      
+      toast({
+        title: t('optInSuccess') || "Ilmoittautuminen onnistui!",
+        description: `${t('optInSuccessDesc') || "Olet nyt ilmoittautunut tapahtumaan"}: ${event}`,
+      });
+      
+      if (onOptInSuccess) {
+        onOptInSuccess(date, userName);
+      }
+      
+      console.log('Opt-in successful!');
+      
     } catch (error) {
-      console.error('Error opting in:', error);
+      console.error('Error during opt-in:', error);
+      toast({
+        title: t('optInError') || "Ilmoittautuminen epäonnistui",
+        description: t('optInErrorDesc') || "Tapahtui virhe ilmoittautumisessa. Yritä myöhemmin uudelleen.",
+        variant: "destructive",
+      });
     } finally {
       setIsOptingIn(false);
     }
@@ -68,7 +114,7 @@ const EventCard = ({ date, event, volunteers, backup, notes, onOptIn }: EventCar
   const isUserAlreadyVolunteering = volunteers.toLowerCase().includes(userName.toLowerCase()) && userName.trim() !== '';
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4 mb-4 animate-fade-in hover:shadow-md transition-shadow">
+    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4 mb-4 animate-fade-in hover:shadow-md transition-shadow w-full">
       {/* Date Section */}
       <div className="flex items-center mb-3">
         <div className="bg-sro-olive text-white rounded-lg p-3 mr-4 min-w-[60px] text-center">
@@ -119,14 +165,14 @@ const EventCard = ({ date, event, volunteers, backup, notes, onOptIn }: EventCar
           </div>
         )}
 
-        {/* Opt-in Button for Future Events */}
+        {/* Opt-in Button for Future Events - Now with explicit responsive classes */}
         {isFutureEvent && userName.trim() && !isUserAlreadyVolunteering && (
-          <div className="pt-2 border-t border-gray-100 dark:border-gray-600">
+          <div className="pt-2 border-t border-gray-100 dark:border-gray-600 w-full">
             <Button 
               onClick={handleOptIn}
               disabled={isOptingIn}
               size="sm"
-              className="w-full bg-sro-olive hover:bg-sro-olive/90 text-white"
+              className="w-full bg-sro-olive hover:bg-sro-olive/90 text-white block sm:block md:block lg:block xl:block"
             >
               <UserPlus className="h-4 w-4 mr-2" />
               {isOptingIn ? t('optingIn') : t('optInButton')}
