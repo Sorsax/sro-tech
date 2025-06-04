@@ -66,7 +66,7 @@ const handleOptIn = async () => {
     const eventDate = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
     const startOfYear = new Date(2025, 0, 5); // Ensimmäinen tapahtuma
     const daysDiff = Math.floor((eventDate.getTime() - startOfYear.getTime()) / (1000 * 60 * 60 * 24));
-    const estimatedRow = Math.max(3, daysDiff + 4);
+    const estimatedRow = Math.max(3, Math.floor(daysDiff / 7) + 3);
 
     const payload = {
       row: estimatedRow,
