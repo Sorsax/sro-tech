@@ -10,6 +10,10 @@ interface SettingsContextType {
   language: Language;
   setLanguage: (language: Language) => void;
   t: (key: string) => string;
+  useCustomOptInUrl: boolean;
+  setUseCustomOptInUrl: (use: boolean) => void;
+  customOptInUrl: string;
+  setCustomOptInUrl: (url: string) => void;
 }
 
 const SettingsContext = createContext<SettingsContextType | undefined>(undefined);
@@ -37,6 +41,15 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     return saved || 'fi';
   });
 
+  const [useCustomOptInUrl, setUseCustomOptInUrlState] = useState(() => {
+    const saved = localStorage.getItem('useCustomOptInUrl');
+    return saved ? JSON.parse(saved) : false;
+  });
+
+  const [customOptInUrl, setCustomOptInUrlState] = useState(() => {
+    return localStorage.getItem('customOptInUrl') || '';
+  });
+
   useEffect(() => {
     localStorage.setItem('darkMode', JSON.stringify(isDarkMode));
     if (isDarkMode) {
@@ -62,6 +75,14 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     }
   }, [language]);
 
+  useEffect(() => {
+    localStorage.setItem('useCustomOptInUrl', JSON.stringify(useCustomOptInUrl));
+  }, [useCustomOptInUrl]);
+
+  useEffect(() => {
+    localStorage.setItem('customOptInUrl', customOptInUrl);
+  }, [customOptInUrl]);
+
   const toggleDarkMode = () => {
     setIsDarkMode(!isDarkMode);
   };
@@ -74,6 +95,14 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     setLanguageState(lang);
   };
 
+  const setUseCustomOptInUrl = (use: boolean) => {
+    setUseCustomOptInUrlState(use);
+  };
+
+  const setCustomOptInUrl = (url: string) => {
+    setCustomOptInUrlState(url);
+  };
+
   const t = (key: string) => getTranslation(language, key);
 
   return (
@@ -84,7 +113,11 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       setUserName, 
       language, 
       setLanguage,
-      t
+      t,
+      useCustomOptInUrl,
+      setUseCustomOptInUrl,
+      customOptInUrl,
+      setCustomOptInUrl
     }}>
       {children}
     </SettingsContext.Provider>
