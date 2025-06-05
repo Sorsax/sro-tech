@@ -1,13 +1,24 @@
 
-import { Settings, Moon, Sun, Languages } from 'lucide-react';
+import { Settings, Moon, Sun, Languages, Link } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useSettings } from '@/contexts/SettingsContext';
 import { Language } from '@/utils/translations';
 
 const SettingsView = () => {
-  const { isDarkMode, toggleDarkMode, language, setLanguage, t } = useSettings();
+  const { 
+    isDarkMode, 
+    toggleDarkMode, 
+    language, 
+    setLanguage, 
+    useCustomOptInUrl,
+    setUseCustomOptInUrl,
+    customOptInUrl,
+    setCustomOptInUrl,
+    t 
+  } = useSettings();
 
   const handleLanguageChange = (value: Language) => {
     setLanguage(value);
@@ -75,6 +86,48 @@ const SettingsView = () => {
                 <SelectItem value="ar">{t('languages.ar')}</SelectItem>
               </SelectContent>
             </Select>
+          </div>
+        </div>
+
+        {/* Custom Opt-In URL Setting */}
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <Link className="h-5 w-5 text-sro-olive" />
+                <div>
+                  <Label className="text-base font-medium text-sro-granite dark:text-white">
+                    Custom Opt-In URL
+                  </Label>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    Use a custom endpoint for opt-in requests
+                  </p>
+                </div>
+              </div>
+              <Switch
+                checked={useCustomOptInUrl}
+                onCheckedChange={setUseCustomOptInUrl}
+                className="data-[state=checked]:bg-sro-olive"
+              />
+            </div>
+            
+            {useCustomOptInUrl && (
+              <div className="mt-4">
+                <Label className="text-sm font-medium text-sro-granite dark:text-white mb-2 block">
+                  Custom URL
+                </Label>
+                <Input
+                  type="url"
+                  placeholder="https://your-custom-endpoint.com/api/opt-in"
+                  value={customOptInUrl}
+                  onChange={(e) => setCustomOptInUrl(e.target.value)}
+                  className="w-full"
+                />
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                  This URL will receive POST requests with JSON payload containing row and value
+                </p>
+              </div>
+            )}
           </div>
         </div>
       </div>

@@ -1,4 +1,3 @@
-
 import { Calendar, Users, UserCheck, StickyNote, UserPlus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useSettings } from '@/contexts/SettingsContext';
@@ -16,12 +15,12 @@ interface EventCardProps {
 }
 
 const EventCard = ({ date, event, volunteers, backup, notes, index, onOptInSuccess }: EventCardProps) => {
-  const { userName, t } = useSettings();
+  const { userName, useCustomOptInUrl, customOptInUrl, t } = useSettings();
   const { toast } = useToast();
   const [isOptingIn, setIsOptingIn] = useState(false);
 
-  // Google Apps Script webhook URL
-  const WEBHOOK_URL = 'https://cors-anywhere.herokuapp.com/https://script.google.com/macros/s/AKfycbz-mdKs3K5NwqplOvV2lhQAN0a583vz-fZQWwYTQgZes6BE3zytE8HBpjpFXU6Td9pL/exec';
+  // Default Google Apps Script webhook URL
+  const DEFAULT_WEBHOOK_URL = 'https://cors-anywhere.herokuapp.com/https://script.google.com/macros/s/AKfycbz-mdKs3K5NwqplOvV2lhQAN0a583vz-fZQWwYTQgZes6BE3zytE8HBpjpFXU6Td9pL/exec';
 
   const formatDate = (dateStr: string) => {
     try {
@@ -68,9 +67,15 @@ const EventCard = ({ date, event, volunteers, backup, notes, index, onOptInSucce
       return;
     }
 
+    // Determine which URL to use
+    const webhookUrl = useCustomOptInUrl && customOptInUrl.trim() 
+      ? customOptInUrl.trim() 
+      : DEFAULT_WEBHOOK_URL;
+
     setIsOptingIn(true);
     try {
       console.log(`Attempting to opt in ${userName} for event on ${date} with index ${index}`);
+      console.log(`Using webhook URL: ${webhookUrl}`);
 
       // Calculate row as 4 + event index
       const targetRow = 4 + index;
@@ -82,7 +87,7 @@ const EventCard = ({ date, event, volunteers, backup, notes, index, onOptInSucce
 
       console.log('Sending payload:', JSON.stringify(payload));
 
-      const response = await fetch(WEBHOOK_URL, {
+      const response = await fetch(webhookUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
