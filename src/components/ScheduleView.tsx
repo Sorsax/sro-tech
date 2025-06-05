@@ -266,6 +266,7 @@ const ScheduleView = () => {
             volunteers={item.volunteers}
             backup={item.backup}
             notes={item.notes}
+            index={showPastEvents ? undefined : index}
             onOptInSuccess={handleOptInSuccess}
           />
         ))}
