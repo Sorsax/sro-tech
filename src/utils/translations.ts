@@ -12,6 +12,15 @@ export const translations = {
     darkModeDescription: "Vaihda sovelluksen ulkoasua",
     language: "Kieli",
     languageDescription: "Valitse sovelluksen kieli",
+    customOptInUrl: "Mukautettu ilmoittautumislinkki",
+    customOptInUrlDescription: "Käytä mukautettua päätepistettä ilmoittautumispyynnöille",
+    customUrl: "Mukautettu URL",
+    customUrlPlaceholder: "https://oma-palvelin.com/api/ilmoittaudu",
+    customUrlHelp: "Tämä URL vastaanottaa POST-pyyntöjä JSON-datalla, joka sisältää rivin ja arvon",
+    
+    // Navigation
+    schedule: "Aikataulu",
+    volunteers: "Tiimi",
     
     // Profile
     profile: "Profiili",
@@ -20,7 +29,6 @@ export const translations = {
     namePlaceholder: "Syötä nimesi",
     
     // Event Card
-    volunteers: "Vapaaehtoiset",
     backup: "Varahenkilö",
     notes: "Lisätiedot",
     optInButton: "Ilmoittaudu vapaaehtoiseksi",
@@ -33,7 +41,6 @@ export const translations = {
     optInErrorDesc: "Tapahtui virhe ilmoittautumisessa. Yritä myöhemmin uudelleen.",
     
     // Schedule
-    schedule: "Aikataulu",
     scheduleDescription: "Tulevat tapahtumat ja vapaaehtoistyöt",
     loadingEvents: "Ladataan tapahtumia...",
     noEvents: "Ei tulevia tapahtumia",
@@ -71,6 +78,15 @@ export const translations = {
     darkModeDescription: "Switch application appearance",
     language: "Language",
     languageDescription: "Choose application language",
+    customOptInUrl: "Custom Opt-In URL",
+    customOptInUrlDescription: "Use a custom endpoint for opt-in requests",
+    customUrl: "Custom URL",
+    customUrlPlaceholder: "https://your-custom-endpoint.com/api/opt-in",
+    customUrlHelp: "This URL will receive POST requests with JSON payload containing row and value",
+    
+    // Navigation
+    schedule: "Schedule",
+    volunteers: "Team",
     
     // Profile
     profile: "Profile",
@@ -79,7 +95,6 @@ export const translations = {
     namePlaceholder: "Enter your name",
     
     // Event Card
-    volunteers: "Volunteers",
     backup: "Backup person",
     notes: "Additional info",
     optInButton: "Sign up as volunteer",
@@ -92,7 +107,6 @@ export const translations = {
     optInErrorDesc: "An error occurred during sign-up. Please try again later.",
     
     // Schedule
-    schedule: "Schedule",
     scheduleDescription: "Upcoming events and volunteer work",
     loadingEvents: "Loading events...",
     noEvents: "No upcoming events",
@@ -130,6 +144,15 @@ export const translations = {
     darkModeDescription: "Växla applikationsutseende",
     language: "Språk",
     languageDescription: "Välj applikationsspråk",
+    customOptInUrl: "Anpassad anmälningslänk",
+    customOptInUrlDescription: "Använd en anpassad slutpunkt för anmälningsförfrågningar",
+    customUrl: "Anpassad URL",
+    customUrlPlaceholder: "https://din-anpassade-slutpunkt.com/api/anmalan",
+    customUrlHelp: "Denna URL kommer att ta emot POST-förfrågningar med JSON-data som innehåller rad och värde",
+    
+    // Navigation
+    schedule: "Schema",
+    volunteers: "Team",
     
     // Profile
     profile: "Profil",
@@ -138,7 +161,6 @@ export const translations = {
     namePlaceholder: "Ange ditt namn",
     
     // Event Card
-    volunteers: "Volontärer",
     backup: "Reservperson",
     notes: "Ytterligare info",
     optInButton: "Anmäl dig som volontär",
@@ -151,7 +173,6 @@ export const translations = {
     optInErrorDesc: "Ett fel uppstod vid anmälan. Försök igen senare.",
     
     // Schedule
-    schedule: "Schema",
     scheduleDescription: "Kommande evenemang och volontärarbete",
     loadingEvents: "Laddar evenemang...",
     noEvents: "Inga kommande evenemang",
@@ -189,6 +210,15 @@ export const translations = {
     darkModeDescription: "تغيير مظهر التطبيق",
     language: "اللغة",
     languageDescription: "اختر لغة التطبيق",
+    customOptInUrl: "رابط التسجيل المخصص",
+    customOptInUrlDescription: "استخدم نقطة نهاية مخصصة لطلبات التسجيل",
+    customUrl: "الرابط المخصص",
+    customUrlPlaceholder: "https://نقطة-النهاية-المخصصة.com/api/التسجيل",
+    customUrlHelp: "سيتلقى هذا الرابط طلبات POST مع بيانات JSON تحتوي على الصف والقيمة",
+    
+    // Navigation
+    schedule: "الجدول الزمني",
+    volunteers: "الفريق",
     
     // Profile
     profile: "الملف الشخصي",
@@ -197,7 +227,6 @@ export const translations = {
     namePlaceholder: "أدخل اسمك",
     
     // Event Card
-    volunteers: "المتطوعون",
     backup: "الشخص الاحتياطي",
     notes: "معلومات إضافية",
     optInButton: "سجل كمتطوع",
@@ -210,7 +239,6 @@ export const translations = {
     optInErrorDesc: "حدث خطأ أثناء التسجيل. حاول مرة أخرى لاحقاً.",
     
     // Schedule
-    schedule: "الجدول الزمني",
     scheduleDescription: "الأحداث القادمة والعمل التطوعي",
     loadingEvents: "تحميل الأحداث...",
     noEvents: "لا توجد أحداث قادمة",

@@ -97,10 +97,10 @@ const SettingsView = () => {
                 <Link className="h-5 w-5 text-sro-olive" />
                 <div>
                   <Label className="text-base font-medium text-sro-granite dark:text-white">
-                    Custom Opt-In URL
+                    {t('customOptInUrl')}
                   </Label>
                   <p className="text-sm text-gray-600 dark:text-gray-400">
-                    Use a custom endpoint for opt-in requests
+                    {t('customOptInUrlDescription')}
                   </p>
                 </div>
               </div>
@@ -114,17 +114,17 @@ const SettingsView = () => {
             {useCustomOptInUrl && (
               <div className="mt-4">
                 <Label className="text-sm font-medium text-sro-granite dark:text-white mb-2 block">
-                  Custom URL
+                  {t('customUrl')}
                 </Label>
                 <Input
                   type="url"
-                  placeholder="https://your-custom-endpoint.com/api/opt-in"
+                  placeholder={t('customUrlPlaceholder')}
                   value={customOptInUrl}
                   onChange={(e) => setCustomOptInUrl(e.target.value)}
                   className="w-full"
                 />
                 <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                  This URL will receive POST requests with JSON payload containing row and value
+                  {t('customUrlHelp')}
                 </p>
               </div>
             )}
