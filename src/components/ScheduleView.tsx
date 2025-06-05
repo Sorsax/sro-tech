@@ -23,6 +23,7 @@ const ScheduleView = () => {
   const [selectedYear, setSelectedYear] = useState('2025');
   const [showMore, setShowMore] = useState(false);
   const EVENTS_TO_SHOW = 3;
+  const CURRENT_YEAR = '2025';
 
   // Google Sheets configuration
   const SHEET_ID = '1iZfopLSu7IxqF-15TYT21xEfvX_Q1-Z1OX8kzagGrDg';
@@ -141,7 +142,7 @@ const ScheduleView = () => {
     const loadData = async () => {
       setLoading(true);
       try {
-        const yearToFetch = showPastEvents ? selectedYear : '2025';
+        const yearToFetch = showPastEvents ? selectedYear : CURRENT_YEAR;
         const data = await fetchGoogleSheetData(yearToFetch);
         setScheduleData(data);
         setError(null);
@@ -160,7 +161,7 @@ const ScheduleView = () => {
     setScheduleData([]);
     setLoading(true);
     try {
-      const yearToFetch = showPastEvents ? selectedYear : '2025';
+      const yearToFetch = showPastEvents ? selectedYear : CURRENT_YEAR;
       const data = await fetchGoogleSheetData(yearToFetch);
       setScheduleData(data);
       setError(null);
@@ -248,7 +249,7 @@ const ScheduleView = () => {
               onChange={(e) => setSelectedYear(e.target.value)}
               className="appearance-none bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 pr-8 text-sm font-medium text-sro-granite dark:text-white focus:outline-none focus:ring-2 focus:ring-sro-olive focus:border-transparent"
             >
-              {availableYears.filter(year => year !== '2025').map((year) => (
+              {availableYears.filter(year => year !== CURRENT_YEAR).map((year) => (
                 <option key={year} value={year}>{year}</option>
               ))}
             </select>
@@ -258,18 +259,33 @@ const ScheduleView = () => {
       )}
 
       <div className="space-y-4">
-        {displayedEvents.map((item, index) => (
-          <EventCard
-            key={index}
-            date={item.date}
-            event={item.event}
-            volunteers={item.volunteers}
-            backup={item.backup}
-            notes={item.notes}
-            index={showPastEvents ? undefined : index}
-            onOptInSuccess={handleOptInSuccess}
-          />
-        ))}
+        {displayedEvents.map((item, displayIndex) => {
+          // Calculate the actual index in the full dataset for current year events
+          let eventIndex: number | undefined = undefined;
+          
+          // Only assign index if we're showing current year data
+          if (!showPastEvents || selectedYear === CURRENT_YEAR) {
+            // Find the position of this event in the original scheduleData array
+            eventIndex = scheduleData.findIndex(event => 
+              event.date === item.date && 
+              event.event === item.event &&
+              event.volunteers === item.volunteers
+            );
+          }
+
+          return (
+            <EventCard
+              key={displayIndex}
+              date={item.date}
+              event={item.event}
+              volunteers={item.volunteers}
+              backup={item.backup}
+              notes={item.notes}
+              index={eventIndex}
+              onOptInSuccess={handleOptInSuccess}
+            />
+          );
+        })}
       </div>
 
       {!showPastEvents && filteredData.length > EVENTS_TO_SHOW && !showMore && (
