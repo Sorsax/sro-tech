@@ -80,9 +80,15 @@ const EventCard = ({ date, event, volunteers, backup, notes, index, onOptInSucce
       // Calculate row as 4 + event index
       const targetRow = 4 + index;
 
+      // Combine current volunteers with new opt-in
+      const currentVolunteers = volunteers.trim();
+      const newVolunteersList = currentVolunteers 
+        ? `${currentVolunteers}, ${userName}` 
+        : userName;
+
       const payload = {
         row: targetRow.toString(),
-        value: userName
+        value: newVolunteersList
       };
 
       console.log('Sending payload:', JSON.stringify(payload));
