@@ -63,7 +63,8 @@ export const translations = {
       fi: "Suomi",
       en: "English",
       sv: "Svenska",
-      ar: "العربية"
+      ar: "العربية",
+      cat: "🐱 Cat"
     }
   },
   en: {
@@ -129,7 +130,8 @@ export const translations = {
       fi: "Finnish",
       en: "English",
       sv: "Swedish",
-      ar: "Arabic"
+      ar: "Arabic",
+      cat: "🐱 Cat"
     }
   },
   sv: {
@@ -195,7 +197,8 @@ export const translations = {
       fi: "Finska",
       en: "Engelska",
       sv: "Svenska",
-      ar: "Arabiska"
+      ar: "Arabiska",
+      cat: "🐱 Cat"
     }
   },
   ar: {
@@ -261,7 +264,75 @@ export const translations = {
       fi: "الفنلندية",
       en: "الإنجليزية",
       sv: "السويدية",
-      ar: "العربية"
+      ar: "العربية",
+      cat: "🐱 Cat"
+    }
+  },
+  cat: {
+    // Header
+    headerTitle: "Meow Rescue Org",
+    headerSubtitle: "Purr-fessional Cat Management",
+    
+    // Settings
+    settings: "Cattings",
+    settingsDescription: "App-purr-ance settings",
+    darkMode: "Night Vision Mode",
+    darkModeDescription: "Switch to stealth hunting mode",
+    language: "Meownguage",
+    languageDescription: "Choose your purr-ferred dialect",
+    customOptInUrl: "Custom Scratching Post URL",
+    customOptInUrlDescription: "Use your own territory for volunteer calls",
+    customUrl: "Custom Litterbox URL",
+    customUrlPlaceholder: "https://my-favorite-windowsill.com/api/nap",
+    customUrlHelp: "This URL will receive POST requests with tasty treats containing row and tuna",
+    
+    // Navigation
+    schedule: "Nap Schedule",
+    volunteers: "Cat Pack",
+    
+    // Profile
+    profile: "Cat Profile",
+    profileDescription: "Your feline credentials",
+    name: "Cat Name",
+    namePlaceholder: "Enter your purr-fect name",
+    
+    // Event Card
+    backup: "Backup cat",
+    notes: "Purr-ticular notes",
+    optInButton: "I'm feline this!",
+    optingIn: "Pouncing on opportunity...",
+    alreadyOptedIn: "You're already paw-tied to this mission",
+    setNameFirst: "Set your cat name first before joining the pride!",
+    optInSuccess: "Purr-fect success!",
+    optInSuccessDesc: "You're now part of this cat-venture",
+    optInError: "Cat-astrophic failure",
+    optInErrorDesc: "Something went fur-ribly wrong. Try again after a nap.",
+    
+    // Schedule
+    scheduleDescription: "Upcoming adventures and mouse-catching duties",
+    loadingEvents: "Hunting for events...",
+    noEvents: "No mice to catch today",
+    refreshEvents: "Check for new prey",
+    upcomingSchedule: "Upcoming Cat-ventures",
+    pastEvents: "Conquered Territories",
+    upcomingTasks: "Future hunting expeditions",
+    pastTasks: "Legendary cat tales",
+    showMore: "Show all nine lives",
+    showLess: "Hide like a ninja cat",
+    moreEvents: "more treats",
+    loadingFromSheets: "Downloading from the cloud... like a cat on a tree...",
+    errorLoadingSheets: "Failed to catch the data mouse",
+    tryAgain: "Pounce again",
+    noPastEvents: "No previous adventures",
+    noUpcomingEvents: "No future expeditions",
+    
+    // Languages
+    languages: {
+      fi: "Finnish Cat",
+      en: "English Cat",
+      sv: "Swedish Cat", 
+      ar: "Arabic Cat",
+      cat: "🐱 Pure Cat"
     }
   }
 };
