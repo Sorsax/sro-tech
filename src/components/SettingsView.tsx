@@ -84,6 +84,7 @@ const SettingsView = () => {
                 <SelectItem value="en">{t('languages.en')}</SelectItem>
                 <SelectItem value="sv">{t('languages.sv')}</SelectItem>
                 <SelectItem value="ar">{t('languages.ar')}</SelectItem>
+                <SelectItem value="cat">{t('languages.cat')}</SelectItem>
               </SelectContent>
             </Select>
           </div>
