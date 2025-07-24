@@ -4,6 +4,7 @@ import { RefreshCw, Wifi, Calendar, Clock, History, ChevronDown, Plus } from 'lu
 import { useToast } from '@/components/ui/use-toast';
 import { Button } from '@/components/ui/button';
 import { useSettings } from '@/contexts/SettingsContext';
+import { useNotifications } from '@/contexts/NotificationContext';
 
 interface ScheduleItem {
   date: string;
@@ -16,6 +17,7 @@ interface ScheduleItem {
 const ScheduleView = () => {
   const { toast } = useToast();
   const { t } = useSettings();
+  const { scheduleEventReminders } = useNotifications();
   const [scheduleData, setScheduleData] = useState<ScheduleItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -145,6 +147,12 @@ const ScheduleView = () => {
         const yearToFetch = showPastEvents ? selectedYear : CURRENT_YEAR;
         const data = await fetchGoogleSheetData(yearToFetch);
         setScheduleData(data);
+        
+        // Schedule notifications for future events when loading current year data
+        if (yearToFetch === CURRENT_YEAR) {
+          scheduleEventReminders(data);
+        }
+        
         setError(null);
       } catch (err) {
         console.error('Error loading data:', err);
@@ -164,6 +172,12 @@ const ScheduleView = () => {
       const yearToFetch = showPastEvents ? selectedYear : CURRENT_YEAR;
       const data = await fetchGoogleSheetData(yearToFetch);
       setScheduleData(data);
+      
+      // Schedule notifications for future events when refreshing current year data
+      if (yearToFetch === CURRENT_YEAR) {
+        scheduleEventReminders(data);
+      }
+      
       setError(null);
     } catch (err) {
       console.error('Error refreshing data:', err);

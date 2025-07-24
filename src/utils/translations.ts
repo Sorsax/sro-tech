@@ -58,6 +58,16 @@ export const translations = {
     noPastEvents: "Ei menneitä tapahtumia",
     noUpcomingEvents: "Ei tulevia tapahtumia",
     
+    // Notifications
+    notifications: "Ilmoitukset",
+    noNotifications: "Ei ilmoituksia",
+    welcomeNotificationTitle: "Tervetuloa SRO Tech -sovellukseen!",
+    welcomeNotificationMessage: "Hei {name}! Olet nyt valmis hallitsemaan vapaaehtoistöitäsi.",
+    eventReminderTitle: "Tapahtuma tarvitsee vapaaehtoisia",
+    eventReminderMessage: "Tapahtuma '{event}' ({date}) tarvitsee vapaaehtoisia. Oletko vapaa?",
+    participationReminderTitle: "Muistutus tapahtumasta",
+    participationReminderMessage: "Muistutus: Olet ilmoittautunut tapahtumaan '{event}' huomenna ({date})",
+    
     // Languages
     languages: {
       fi: "Suomi",
@@ -124,6 +134,16 @@ export const translations = {
     tryAgain: "Try again",
     noPastEvents: "No past events",
     noUpcomingEvents: "No upcoming events",
+    
+    // Notifications
+    notifications: "Notifications",
+    noNotifications: "No notifications",
+    welcomeNotificationTitle: "Welcome to SRO Tech!",
+    welcomeNotificationMessage: "Hi {name}! You're now ready to manage your volunteer work.",
+    eventReminderTitle: "Event needs volunteers",
+    eventReminderMessage: "Event '{event}' ({date}) needs volunteers. Are you available?",
+    participationReminderTitle: "Event reminder",
+    participationReminderMessage: "Reminder: You're signed up for '{event}' tomorrow ({date})",
     
     // Languages
     languages: {
@@ -192,6 +212,16 @@ export const translations = {
     noPastEvents: "Inga tidigare evenemang",
     noUpcomingEvents: "Inga kommande evenemang",
     
+    // Notifications
+    notifications: "Notifikationer",
+    noNotifications: "Inga notifikationer",
+    welcomeNotificationTitle: "Välkommen till SRO Tech!",
+    welcomeNotificationMessage: "Hej {name}! Du är nu redo att hantera ditt volontärarbete.",
+    eventReminderTitle: "Evenemang behöver volontärer",
+    eventReminderMessage: "Evenemang '{event}' ({date}) behöver volontärer. Är du tillgänglig?",
+    participationReminderTitle: "Evenemangs påminnelse",
+    participationReminderMessage: "Påminnelse: Du är anmäld till '{event}' imorgon ({date})",
+    
     // Languages
     languages: {
       fi: "Finska",
@@ -259,6 +289,16 @@ export const translations = {
     noPastEvents: "لا توجد أحداث سابقة",
     noUpcomingEvents: "لا توجد أحداث قادمة",
     
+    // Notifications
+    notifications: "الإشعارات",
+    noNotifications: "لا توجد إشعارات",
+    welcomeNotificationTitle: "مرحباً بك في SRO Tech!",
+    welcomeNotificationMessage: "مرحباً {name}! أنت الآن جاهز لإدارة عملك التطوعي.",
+    eventReminderTitle: "الحدث يحتاج متطوعين",
+    eventReminderMessage: "الحدث '{event}' ({date}) يحتاج متطوعين. هل أنت متاح؟",
+    participationReminderTitle: "تذكير بالحدث",
+    participationReminderMessage: "تذكير: أنت مسجل في '{event}' غداً ({date})",
+    
     // Languages
     languages: {
       fi: "الفنلندية",
@@ -325,6 +365,16 @@ export const translations = {
     tryAgain: "Pounce again",
     noPastEvents: "No previous adventures",
     noUpcomingEvents: "No future expeditions",
+    
+    // Notifications
+    notifications: "Purr-notifications",
+    noNotifications: "No messages from the pack",
+    welcomeNotificationTitle: "Welcome to the Cat Pack!",
+    welcomeNotificationMessage: "Meow {name}! You're now ready for epic cat-ventures.",
+    eventReminderTitle: "Mission needs more cats",
+    eventReminderMessage: "Mission '{event}' ({date}) needs more paws. Are you feline up to it?",
+    participationReminderTitle: "Cat-venture reminder",
+    participationReminderMessage: "Reminder: You're signed up for '{event}' tomorrow ({date}). Don't fur-get!",
     
     // Languages
     languages: {
