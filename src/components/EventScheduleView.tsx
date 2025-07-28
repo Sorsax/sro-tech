@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Calendar, Clock, MapPin, Timer, Eye, EyeOff, ChevronDown } from 'lucide-react';
+import { Calendar, Clock, MapPin, Timer, Eye, EyeOff, ChevronDown, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useSettings } from '@/contexts/SettingsContext';
 import { useToast } from '@/components/ui/use-toast';
@@ -126,7 +126,7 @@ const EventScheduleView = () => {
     if (selectedEvent === 'HSP 2025') {
       loadAllSheetData();
     }
-  }, [selectedEvent]);
+  }, [selectedEvent, selectedDate, selectedArena]);
 
   const getCurrentSheet = () => {
     const targetDate = new Date(selectedDate);
@@ -186,7 +186,7 @@ const EventScheduleView = () => {
     return (
       <div className="px-4 py-8">
         <div className="text-center">
-          <Clock className="h-8 w-8 text-sro-olive mx-auto mb-4 animate-spin" />
+          <RefreshCw className="h-8 w-8 text-sro-olive mx-auto mb-4 animate-spin" />
           <p className="text-gray-600 dark:text-gray-300">{t('loadingFromSheets')}</p>
         </div>
       </div>
