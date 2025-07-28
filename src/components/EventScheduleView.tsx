@@ -135,7 +135,12 @@ const EventScheduleView = () => {
     if (targetDateStr === '2025-08-15') {
       return sheets.find(s => s.name === 'PE 15.8');
     } else if (targetDateStr === '2025-08-16') {
-      return sheets.find(s => s.name.includes(selectedArena));
+      // For Saturday, find the sheet that matches the selected arena
+      if (selectedArena === 'Sibelius-sali') {
+        return sheets.find(s => s.name === 'LA 15.8 Sibelius-sali');
+      } else {
+        return sheets.find(s => s.name === 'LA 16.8 Aho-sali');
+      }
     } else if (targetDateStr === '2025-08-17') {
       return sheets.find(s => s.name === 'SU 17.8');
     }
