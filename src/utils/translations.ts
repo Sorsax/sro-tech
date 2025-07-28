@@ -68,6 +68,18 @@ export const translations = {
     participationReminderTitle: "Muistutus tapahtumasta",
     participationReminderMessage: "Muistutus: Olet ilmoittautunut tapahtumaan '{event}' huomenna ({date})",
     
+    // Event Schedule
+    eventSchedule: "Tapahtumaohjelma",
+    selectEvent: "Valitse tapahtuma",
+    selectDate: "Valitse päivämäärä",
+    selectArena: "Valitse areena",
+    showAllEvents: "Näytä kaikki tapahtumat",
+    showNextOnly: "Näytä vain seuraava",
+    noEventsForDate: "Ei tapahtumia tälle päivälle",
+    friday: "Perjantai",
+    saturday: "Lauantai",
+    sunday: "Sunnuntai",
+    
     // Languages
     languages: {
       fi: "Suomi",
@@ -144,6 +156,18 @@ export const translations = {
     eventReminderMessage: "Event '{event}' ({date}) needs volunteers. Are you available?",
     participationReminderTitle: "Event reminder",
     participationReminderMessage: "Reminder: You're signed up for '{event}' tomorrow ({date})",
+    
+    // Event Schedule
+    eventSchedule: "Event Schedule",
+    selectEvent: "Select Event",
+    selectDate: "Select Date",
+    selectArena: "Select Arena",
+    showAllEvents: "Show All Events",
+    showNextOnly: "Show Next Only",
+    noEventsForDate: "No events for this date",
+    friday: "Friday",
+    saturday: "Saturday",
+    sunday: "Sunday",
     
     // Languages
     languages: {
@@ -222,6 +246,18 @@ export const translations = {
     participationReminderTitle: "Evenemangs påminnelse",
     participationReminderMessage: "Påminnelse: Du är anmäld till '{event}' imorgon ({date})",
     
+    // Event Schedule
+    eventSchedule: "Eventschema",
+    selectEvent: "Välj event",
+    selectDate: "Välj datum",
+    selectArena: "Välj arena",
+    showAllEvents: "Visa alla events",
+    showNextOnly: "Visa endast nästa",
+    noEventsForDate: "Inga events för detta datum",
+    friday: "Fredag",
+    saturday: "Lördag",
+    sunday: "Söndag",
+    
     // Languages
     languages: {
       fi: "Finska",
@@ -299,6 +335,18 @@ export const translations = {
     participationReminderTitle: "تذكير بالحدث",
     participationReminderMessage: "تذكير: أنت مسجل في '{event}' غداً ({date})",
     
+    // Event Schedule
+    eventSchedule: "جدول الأحداث",
+    selectEvent: "اختر الحدث",
+    selectDate: "اختر التاريخ",
+    selectArena: "اختر الساحة",
+    showAllEvents: "إظهار جميع الأحداث",
+    showNextOnly: "إظهار التالي فقط",
+    noEventsForDate: "لا توجد أحداث لهذا التاريخ",
+    friday: "الجمعة",
+    saturday: "السبت",
+    sunday: "الأحد",
+    
     // Languages
     languages: {
       fi: "الفنلندية",
@@ -375,6 +423,18 @@ export const translations = {
     eventReminderMessage: "Mission '{event}' ({date}) needs more paws. Are you feline up to it?",
     participationReminderTitle: "Cat-venture reminder",
     participationReminderMessage: "Reminder: You're signed up for '{event}' tomorrow ({date}). Don't fur-get!",
+    
+    // Event Schedule
+    eventSchedule: "Purr-event Schedule",
+    selectEvent: "Select Meow-vent",
+    selectDate: "Select Cat-endar Date",
+    selectArena: "Select Play-arena",
+    showAllEvents: "Show All Purr-vents",
+    showNextOnly: "Show Next Meow Only",
+    noEventsForDate: "No purr-vents for this cat-endar date",
+    friday: "Fur-iday",
+    saturday: "Cat-urday",
+    sunday: "Sun-nap-day",
     
     // Languages
     languages: {

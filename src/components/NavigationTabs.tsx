@@ -1,5 +1,5 @@
 
-import { Calendar, Settings, Users } from 'lucide-react';
+import { Calendar, Settings, Users, Clock } from 'lucide-react';
 import { useSettings } from '@/contexts/SettingsContext';
 
 interface NavigationTabsProps {
@@ -12,6 +12,7 @@ const NavigationTabs = ({ activeTab, onTabChange }: NavigationTabsProps) => {
   
   const tabs = [
     { id: 'schedule', label: t('schedule'), icon: Calendar },
+    { id: 'event-schedule', label: t('eventSchedule'), icon: Clock },
     { id: 'volunteers', label: t('volunteers'), icon: Users },
     { id: 'settings', label: t('settings'), icon: Settings }
   ];

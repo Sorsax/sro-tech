@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import Header from '../components/Header';
 import ScheduleView from '../components/ScheduleView';
+import EventScheduleView from '../components/EventScheduleView';
 import ContactsView from '../components/ContactsView';
 import SettingsView from '../components/SettingsView';
 import NavigationTabs from '../components/NavigationTabs';
@@ -24,6 +25,8 @@ const Index = () => {
     switch (activeTab) {
       case 'schedule':
         return <ScheduleView />;
+      case 'event-schedule':
+        return <EventScheduleView />;
       case 'volunteers':
         return <ContactsView />;
       case 'settings':
