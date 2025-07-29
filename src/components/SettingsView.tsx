@@ -1,5 +1,5 @@
 
-import { Settings, Moon, Sun, Languages, Link } from 'lucide-react';
+import { Settings, Moon, Sun, Languages, Link, Bell } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
@@ -17,6 +17,8 @@ const SettingsView = () => {
     setUseCustomOptInUrl,
     customOptInUrl,
     setCustomOptInUrl,
+    notificationsEnabled,
+    setNotificationsEnabled,
     t 
   } = useSettings();
 
@@ -87,6 +89,28 @@ const SettingsView = () => {
                 <SelectItem value="cat">{t('languages.cat')}</SelectItem>
               </SelectContent>
             </Select>
+          </div>
+        </div>
+
+        {/* Notifications Setting */}
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <Bell className="h-5 w-5 text-sro-olive" />
+              <div>
+                <Label className="text-base font-medium text-sro-granite dark:text-white">
+                  {t('notificationsToggle')}
+                </Label>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  {t('enableNotifications')}
+                </p>
+              </div>
+            </div>
+            <Switch
+              checked={notificationsEnabled}
+              onCheckedChange={setNotificationsEnabled}
+              className="data-[state=checked]:bg-sro-olive"
+            />
           </div>
         </div>
 
