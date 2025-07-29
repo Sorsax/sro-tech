@@ -103,6 +103,7 @@ const EventScheduleView = () => {
         }
       }
       
+      console.log(`Fetched ${data.length} events for sheet: ${sheetName}`);
       return data;
     } catch (error) {
       console.error('Error fetching sheet data:', error);
@@ -121,6 +122,7 @@ const EventScheduleView = () => {
       }
       
       setScheduleData(allData);
+      console.log('All sheet data loaded:', allData);
     } catch (error) {
       console.error('Error loading sheet data:', error);
       toast({
@@ -154,25 +156,31 @@ const EventScheduleView = () => {
     if (selectedEvent === 'HSP 2025') {
       loadAllSheetData();
     }
-  }, [selectedEvent, selectedDate, selectedArena]);
+  }, [selectedEvent]);
 
   const getCurrentSheet = () => {
-    const targetDate = new Date(selectedDate);
-    const targetDateStr = targetDate.toISOString().split('T')[0];
+    const targetDateStr = selectedDate;
+    
+    console.log('getCurrentSheet - selectedDate:', selectedDate, 'targetDateStr:', targetDateStr, 'selectedArena:', selectedArena);
     
     if (targetDateStr === '2025-08-15') {
+      console.log('Returning PE 15.8 sheet');
       return sheets.find(s => s.name === 'PE 15.8');
     } else if (targetDateStr === '2025-08-16') {
       // For Saturday, find the sheet that matches the selected arena
       if (selectedArena === 'Sibelius-sali') {
+        console.log('Returning LA 16.8 Sibelius-sali sheet');
         return sheets.find(s => s.name === 'LA 16.8 Sibelius-sali');
       } else {
+        console.log('Returning LA 16.8 Aho-sali sheet');
         return sheets.find(s => s.name === 'LA 16.8 Aho-sali');
       }
     } else if (targetDateStr === '2025-08-17') {
+      console.log('Returning SU 17.8 sheet');
       return sheets.find(s => s.name === 'SU 17.8');
     }
     
+    console.log('No sheet found for date:', targetDateStr);
     return null;
   };
 
@@ -194,9 +202,13 @@ const EventScheduleView = () => {
 
   const getFilteredEvents = () => {
     const currentSheet = getCurrentSheet();
-    if (!currentSheet || !scheduleData[currentSheet.name]) return [];
+    if (!currentSheet || !scheduleData[currentSheet.name]) {
+      console.log('No sheet data found for:', currentSheet?.name);
+      return [];
+    }
     
     const events = scheduleData[currentSheet.name];
+    console.log('Events for sheet:', currentSheet.name, events);
     
     if (showAllEvents) {
       return events;
@@ -208,13 +220,42 @@ const EventScheduleView = () => {
     return nextEvent ? [nextEvent] : [];
   };
 
+  const getCurrentAndNextEvents = () => {
+    const currentSheet = getCurrentSheet();
+    if (!currentSheet || !scheduleData[currentSheet.name]) return { current: null, next: null };
+    
+    const events = scheduleData[currentSheet.name];
+    const currentTime = getCurrentTime();
+    
+    let currentEvent = null;
+    let nextEvent = null;
+    
+    for (let i = 0; i < events.length; i++) {
+      const eventTime = parseTime(events[i].time);
+      const nextEventTime = i < events.length - 1 ? parseTime(events[i + 1].time) : null;
+      
+      if (eventTime <= currentTime && (nextEventTime === null || currentTime < nextEventTime)) {
+        currentEvent = events[i];
+        nextEvent = events[i + 1] || null;
+        break;
+      } else if (eventTime > currentTime && !nextEvent) {
+        nextEvent = events[i];
+        break;
+      }
+    }
+    
+    return { current: currentEvent, next: nextEvent };
+  };
+
   const availableDates = ['2025-08-15', '2025-08-16', '2025-08-17'];
 
   if (loading) {
     return (
       <div className="px-4 py-8">
         <div className="text-center">
-          <RefreshCw className="h-8 w-8 text-sro-olive mx-auto mb-4 animate-spin" />
+          <div className="flex justify-center items-center mb-4">
+            <div className="animate-spin rounded-full h-8 w-8 border-2 border-sro-olive border-r-transparent"></div>
+          </div>
           <p className="text-gray-600 dark:text-gray-300">{t('loadingFromSheets')}</p>
         </div>
       </div>
@@ -315,36 +356,109 @@ const EventScheduleView = () => {
 
       {/* Schedule Events */}
       <div className="space-y-4">
-        {getFilteredEvents().map((item, index) => (
-          <div
-            key={index}
-            className="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700 shadow-sm"
-          >
-            <div className="flex items-start justify-between mb-2">
-              <div className="flex items-center text-sro-olive font-semibold">
-                <Clock className="h-4 w-4 mr-2" />
-                {item.time}
+        {!showAllEvents ? (
+          // Show current and next events with indicators
+          (() => {
+            const { current, next } = getCurrentAndNextEvents();
+            return (
+              <>
+                {current && (
+                  <div className="bg-green-50 dark:bg-green-900/20 rounded-lg p-4 border border-green-200 dark:border-green-800 shadow-sm">
+                    <div className="flex items-start justify-between mb-2">
+                      <div className="flex items-center text-green-600 dark:text-green-400 font-semibold">
+                        <Clock className="h-4 w-4 mr-2" />
+                        {current.time}
+                        <span className="ml-2 text-xs bg-green-100 dark:bg-green-800 px-2 py-1 rounded-full">
+                          {t('currentEvent')}
+                        </span>
+                      </div>
+                      {current.duration && (
+                        <div className="flex items-center text-green-500 dark:text-green-400 text-sm">
+                          <Timer className="h-3 w-3 mr-1" />
+                          {current.duration}
+                        </div>
+                      )}
+                    </div>
+                    
+                    <h3 className="font-medium text-sro-granite dark:text-white mb-2">
+                      {current.what}
+                    </h3>
+                    
+                    {current.where && (
+                      <div className="flex items-center text-gray-600 dark:text-gray-400 text-sm">
+                        <MapPin className="h-3 w-3 mr-1" />
+                        {current.where}
+                      </div>
+                    )}
+                  </div>
+                )}
+                
+                {next && (
+                  <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4 border border-blue-200 dark:border-blue-800 shadow-sm">
+                    <div className="flex items-start justify-between mb-2">
+                      <div className="flex items-center text-blue-600 dark:text-blue-400 font-semibold">
+                        <Clock className="h-4 w-4 mr-2" />
+                        {next.time}
+                        <span className="ml-2 text-xs bg-blue-100 dark:bg-blue-800 px-2 py-1 rounded-full">
+                          {t('nextEvent')}
+                        </span>
+                      </div>
+                      {next.duration && (
+                        <div className="flex items-center text-blue-500 dark:text-blue-400 text-sm">
+                          <Timer className="h-3 w-3 mr-1" />
+                          {next.duration}
+                        </div>
+                      )}
+                    </div>
+                    
+                    <h3 className="font-medium text-sro-granite dark:text-white mb-2">
+                      {next.what}
+                    </h3>
+                    
+                    {next.where && (
+                      <div className="flex items-center text-gray-600 dark:text-gray-400 text-sm">
+                        <MapPin className="h-3 w-3 mr-1" />
+                        {next.where}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </>
+            );
+          })()
+        ) : (
+          // Show all events
+          getFilteredEvents().map((item, index) => (
+            <div
+              key={index}
+              className="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700 shadow-sm"
+            >
+              <div className="flex items-start justify-between mb-2">
+                <div className="flex items-center text-sro-olive font-semibold">
+                  <Clock className="h-4 w-4 mr-2" />
+                  {item.time}
+                </div>
+                {item.duration && (
+                  <div className="flex items-center text-gray-500 dark:text-gray-400 text-sm">
+                    <Timer className="h-3 w-3 mr-1" />
+                    {item.duration}
+                  </div>
+                )}
               </div>
-              {item.duration && (
-                <div className="flex items-center text-gray-500 dark:text-gray-400 text-sm">
-                  <Timer className="h-3 w-3 mr-1" />
-                  {item.duration}
+              
+              <h3 className="font-medium text-sro-granite dark:text-white mb-2">
+                {item.what}
+              </h3>
+              
+              {item.where && (
+                <div className="flex items-center text-gray-600 dark:text-gray-400 text-sm">
+                  <MapPin className="h-3 w-3 mr-1" />
+                  {item.where}
                 </div>
               )}
             </div>
-            
-            <h3 className="font-medium text-sro-granite dark:text-white mb-2">
-              {item.what}
-            </h3>
-            
-            {item.where && (
-              <div className="flex items-center text-gray-600 dark:text-gray-400 text-sm">
-                <MapPin className="h-3 w-3 mr-1" />
-                {item.where}
-              </div>
-            )}
-          </div>
-        ))}
+          ))
+        )}
       </div>
 
       {getFilteredEvents().length === 0 && !loading && (

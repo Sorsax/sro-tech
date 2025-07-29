@@ -82,6 +82,8 @@ export const translations = {
     refresh: "Päivitä",
     notificationsToggle: "Ilmoitukset",
     enableNotifications: "Ota ilmoitukset käyttöön",
+    currentEvent: "Meneillään",
+    nextEvent: "Seuraava",
     
     // Languages
     languages: {
@@ -174,6 +176,8 @@ export const translations = {
     refresh: "Refresh",
     notificationsToggle: "Notifications",
     enableNotifications: "Enable notifications",
+    currentEvent: "Current",
+    nextEvent: "Next",
     
     // Languages
     languages: {
@@ -266,6 +270,8 @@ export const translations = {
     refresh: "Uppdatera",
     notificationsToggle: "Notifikationer",
     enableNotifications: "Aktivera notifikationer",
+    currentEvent: "Pågående",
+    nextEvent: "Nästa",
     
     // Languages
     languages: {
@@ -358,6 +364,8 @@ export const translations = {
     refresh: "تحديث",
     notificationsToggle: "الإشعارات",
     enableNotifications: "تمكين الإشعارات",
+    currentEvent: "الحالي",
+    nextEvent: "التالي",
     
     // Languages
     languages: {
@@ -450,6 +458,8 @@ export const translations = {
     refresh: "Pounce again",
     notificationsToggle: "Purr-notifications",
     enableNotifications: "Enable purr-notifications",
+    currentEvent: "Purr-rent",
+    nextEvent: "Next Meow",
     
     // Languages
     languages: {
