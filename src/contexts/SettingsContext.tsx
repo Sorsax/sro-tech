@@ -14,6 +14,8 @@ interface SettingsContextType {
   setUseCustomOptInUrl: (use: boolean) => void;
   customOptInUrl: string;
   setCustomOptInUrl: (url: string) => void;
+  notificationsEnabled: boolean;
+  setNotificationsEnabled: (enabled: boolean) => void;
 }
 
 const SettingsContext = createContext<SettingsContextType | undefined>(undefined);
@@ -50,6 +52,11 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     return localStorage.getItem('customOptInUrl') || '';
   });
 
+  const [notificationsEnabled, setNotificationsEnabledState] = useState(() => {
+    const saved = localStorage.getItem('notificationsEnabled');
+    return saved ? JSON.parse(saved) : true;
+  });
+
   useEffect(() => {
     localStorage.setItem('darkMode', JSON.stringify(isDarkMode));
     if (isDarkMode) {
@@ -83,6 +90,10 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     localStorage.setItem('customOptInUrl', customOptInUrl);
   }, [customOptInUrl]);
 
+  useEffect(() => {
+    localStorage.setItem('notificationsEnabled', JSON.stringify(notificationsEnabled));
+  }, [notificationsEnabled]);
+
   const toggleDarkMode = () => {
     setIsDarkMode(!isDarkMode);
   };
@@ -103,6 +114,10 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     setCustomOptInUrlState(url);
   };
 
+  const setNotificationsEnabled = (enabled: boolean) => {
+    setNotificationsEnabledState(enabled);
+  };
+
   const t = (key: string) => getTranslation(language, key);
 
   return (
@@ -117,7 +132,9 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       useCustomOptInUrl,
       setUseCustomOptInUrl,
       customOptInUrl,
-      setCustomOptInUrl
+      setCustomOptInUrl,
+      notificationsEnabled,
+      setNotificationsEnabled
     }}>
       {children}
     </SettingsContext.Provider>

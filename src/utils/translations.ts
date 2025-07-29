@@ -79,6 +79,9 @@ export const translations = {
     friday: "Perjantai",
     saturday: "Lauantai",
     sunday: "Sunnuntai",
+    refresh: "Päivitä",
+    notificationsToggle: "Ilmoitukset",
+    enableNotifications: "Ota ilmoitukset käyttöön",
     
     // Languages
     languages: {
@@ -168,6 +171,9 @@ export const translations = {
     friday: "Friday",
     saturday: "Saturday",
     sunday: "Sunday",
+    refresh: "Refresh",
+    notificationsToggle: "Notifications",
+    enableNotifications: "Enable notifications",
     
     // Languages
     languages: {
@@ -257,6 +263,9 @@ export const translations = {
     friday: "Fredag",
     saturday: "Lördag",
     sunday: "Söndag",
+    refresh: "Uppdatera",
+    notificationsToggle: "Notifikationer",
+    enableNotifications: "Aktivera notifikationer",
     
     // Languages
     languages: {
@@ -346,6 +355,9 @@ export const translations = {
     friday: "الجمعة",
     saturday: "السبت",
     sunday: "الأحد",
+    refresh: "تحديث",
+    notificationsToggle: "الإشعارات",
+    enableNotifications: "تمكين الإشعارات",
     
     // Languages
     languages: {
@@ -435,6 +447,9 @@ export const translations = {
     friday: "Fur-iday",
     saturday: "Cat-urday",
     sunday: "Sun-nap-day",
+    refresh: "Pounce again",
+    notificationsToggle: "Purr-notifications",
+    enableNotifications: "Enable purr-notifications",
     
     // Languages
     languages: {

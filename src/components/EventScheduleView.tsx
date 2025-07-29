@@ -18,20 +18,28 @@ interface SheetData {
 const EventScheduleView = () => {
   const { t } = useSettings();
   const { toast } = useToast();
-  const [selectedEvent, setSelectedEvent] = useState('HSP 2025');
-  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
+  const [selectedEvent, setSelectedEvent] = useState(() => {
+    return localStorage.getItem('eventSchedule_selectedEvent') || 'HSP 2025';
+  });
+  const [selectedDate, setSelectedDate] = useState(() => {
+    return localStorage.getItem('eventSchedule_selectedDate') || new Date().toISOString().split('T')[0];
+  });
   const [scheduleData, setScheduleData] = useState<SheetData>({});
   const [loading, setLoading] = useState(false);
-  const [showAllEvents, setShowAllEvents] = useState(false);
-  const [selectedArena, setSelectedArena] = useState('Sibelius-sali');
+  const [showAllEvents, setShowAllEvents] = useState(() => {
+    return localStorage.getItem('eventSchedule_showAllEvents') === 'true';
+  });
+  const [selectedArena, setSelectedArena] = useState(() => {
+    return localStorage.getItem('eventSchedule_selectedArena') || 'Sibelius-sali';
+  });
 
   const SHEET_ID = '14yS8Bce2T06AQQCi2tGVxCNZA8eZpvGM';
   
   const sheets = [
-    { name: 'PE 15.8', date: '2025-08-15', label: t('friday') + ' 15.8' },
-    { name: 'LA 15.8 Sibelius-sali', date: '2025-08-16', label: t('saturday') + ' 16.8 - Sibelius', arena: 'Sibelius-sali' },
-    { name: 'LA 16.8 Aho-sali', date: '2025-08-16', label: t('saturday') + ' 16.8 - Aho', arena: 'Aho-sali' },
-    { name: 'SU 17.8', date: '2025-08-17', label: t('sunday') + ' 17.8' }
+    { name: 'PE 15.8', date: '2025-08-15', label: t('friday') + ' 15.8', startRow: 6 },
+    { name: 'LA 16.8 Sibelius-sali', date: '2025-08-16', label: t('saturday') + ' 16.8 - Sibelius', arena: 'Sibelius-sali', startRow: 5 },
+    { name: 'LA 16.8 Aho-sali', date: '2025-08-16', label: t('saturday') + ' 16.8 - Aho', arena: 'Aho-sali', startRow: 5 },
+    { name: 'SU 17.8', date: '2025-08-17', label: t('sunday') + ' 17.8', startRow: 6 }
   ];
 
   const parseCSVLine = (line: string): string[] => {
@@ -75,8 +83,11 @@ const EventScheduleView = () => {
       const lines = csvText.split('\n');
       const data: ScheduleItem[] = [];
       
-      // Start from row 6 (index 5)
-      for (let i = 5; i < lines.length; i++) {
+      // Find the correct starting row for this sheet
+      const sheet = sheets.find(s => s.name === sheetName);
+      const startIndex = sheet ? sheet.startRow - 1 : 5; // Convert to 0-based index
+      
+      for (let i = startIndex; i < lines.length; i++) {
         const line = lines[i].trim();
         if (line) {
           const columns = parseCSVLine(line);
@@ -122,6 +133,23 @@ const EventScheduleView = () => {
     }
   };
 
+  // Save to localStorage when selections change
+  useEffect(() => {
+    localStorage.setItem('eventSchedule_selectedEvent', selectedEvent);
+  }, [selectedEvent]);
+
+  useEffect(() => {
+    localStorage.setItem('eventSchedule_selectedDate', selectedDate);
+  }, [selectedDate]);
+
+  useEffect(() => {
+    localStorage.setItem('eventSchedule_selectedArena', selectedArena);
+  }, [selectedArena]);
+
+  useEffect(() => {
+    localStorage.setItem('eventSchedule_showAllEvents', showAllEvents.toString());
+  }, [showAllEvents]);
+
   useEffect(() => {
     if (selectedEvent === 'HSP 2025') {
       loadAllSheetData();
@@ -137,7 +165,7 @@ const EventScheduleView = () => {
     } else if (targetDateStr === '2025-08-16') {
       // For Saturday, find the sheet that matches the selected arena
       if (selectedArena === 'Sibelius-sali') {
-        return sheets.find(s => s.name === 'LA 15.8 Sibelius-sali');
+        return sheets.find(s => s.name === 'LA 16.8 Sibelius-sali');
       } else {
         return sheets.find(s => s.name === 'LA 16.8 Aho-sali');
       }
@@ -262,7 +290,7 @@ const EventScheduleView = () => {
           </div>
         )}
 
-        {/* Show All Events Toggle */}
+        {/* Show All Events Toggle and Refresh */}
         <div className="flex items-center justify-between">
           <Button
             onClick={() => setShowAllEvents(!showAllEvents)}
@@ -271,6 +299,16 @@ const EventScheduleView = () => {
           >
             {showAllEvents ? <EyeOff className="h-4 w-4 mr-2" /> : <Eye className="h-4 w-4 mr-2" />}
             {showAllEvents ? t('showNextOnly') : t('showAllEvents')}
+          </Button>
+          
+          <Button
+            onClick={loadAllSheetData}
+            variant="outline"
+            disabled={loading}
+            className="border-sro-olive text-sro-olive hover:bg-sro-olive/10"
+          >
+            <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+            {t('refresh')}
           </Button>
         </div>
       </div>
