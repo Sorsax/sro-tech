@@ -23,6 +23,15 @@ interface NotificationContextType {
   scheduleEventReminders: (events: any[]) => void;
   recordOptIn: (eventDate: string, eventName: string, userName: string) => void;
   unreadCount: number;
+  // Debug functions
+  testNotification: () => void;
+  testEventReminder: () => void;
+  testParticipationReminder: () => void;
+  testStandbyNotification: () => void;
+  getScheduledNotifications: () => Promise<any[]>;
+  clearScheduledNotifications: () => Promise<void>;
+  getOptInRecords: () => OptInRecord[];
+  clearOptInRecords: () => void;
 }
 
 const NotificationContext = createContext<NotificationContextType | undefined>(undefined);
@@ -388,6 +397,120 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
 
   const unreadCount = notifications.filter(n => !n.read).length;
 
+  // Debug functions
+  const testNotification = () => {
+    addNotification({
+      title: 'Test Notification',
+      message: 'This is a test notification to verify the system is working.',
+      type: 'event_reminder'
+    });
+  };
+
+  const testEventReminder = () => {
+    addNotification({
+      title: t('eventReminderTitle'),
+      message: t('eventReminderMessage').replace('{event}', 'Test Event').replace('{date}', new Date().toLocaleDateString()),
+      type: 'event_reminder'
+    });
+  };
+
+  const testParticipationReminder = () => {
+    addNotification({
+      title: t('participationReminderTitle'),
+      message: t('participationReminderMessage').replace('{event}', 'Test Event').replace('{date}', new Date().toLocaleDateString()),
+      type: 'participation_reminder'
+    });
+  };
+
+  const testStandbyNotification = async () => {
+    if (Capacitor.isNativePlatform()) {
+      try {
+        // Schedule a notification for 1 minute from now
+        const scheduleTime = new Date();
+        scheduleTime.setMinutes(scheduleTime.getMinutes() + 1);
+
+        await LocalNotifications.schedule({
+          notifications: [
+            {
+              title: 'Standby Test Notification',
+              body: 'This notification was sent after 1 minute to test if notifications work when the device is on standby.',
+              id: Date.now(),
+              schedule: { at: scheduleTime },
+              sound: 'default',
+              attachments: [],
+              actionTypeId: '',
+              extra: {
+                type: 'standby_test'
+              }
+            }
+          ]
+        });
+
+        // Show immediate feedback
+        toast({
+          title: 'Standby Test Scheduled',
+          description: 'A test notification will be sent in 1 minute to check if notifications work when the device is on standby.'
+        });
+
+      } catch (error) {
+        console.error('Error scheduling standby test notification:', error);
+        toast({
+          title: 'Error',
+          description: 'Failed to schedule standby test notification.'
+        });
+      }
+    } else {
+      // For web/development, just show a regular notification after 1 minute
+      setTimeout(() => {
+        addNotification({
+          title: 'Standby Test Notification',
+          message: 'This notification was sent after 1 minute to test if notifications work when the device is on standby.',
+          type: 'event_reminder'
+        });
+      }, 60000); // 60 seconds
+
+      toast({
+        title: 'Standby Test Scheduled',
+        description: 'A test notification will be sent in 1 minute (web version uses setTimeout).'
+      });
+    }
+  };
+
+  const getScheduledNotifications = async (): Promise<any[]> => {
+    if (Capacitor.isNativePlatform()) {
+      try {
+        const { notifications } = await LocalNotifications.getPending();
+        return notifications;
+      } catch (error) {
+        console.error('Error getting scheduled notifications:', error);
+        return [];
+      }
+    }
+    return [];
+  };
+
+  const clearScheduledNotifications = async (): Promise<void> => {
+    if (Capacitor.isNativePlatform()) {
+      try {
+        const { notifications } = await LocalNotifications.getPending();
+        if (notifications.length > 0) {
+          const ids = notifications.map(n => ({ id: n.id }));
+          await LocalNotifications.cancel({ notifications: ids });
+        }
+      } catch (error) {
+        console.error('Error clearing scheduled notifications:', error);
+      }
+    }
+  };
+
+  const getOptInRecords = (): OptInRecord[] => {
+    return JSON.parse(localStorage.getItem('eventOptIns') || '[]');
+  };
+
+  const clearOptInRecords = () => {
+    localStorage.removeItem('eventOptIns');
+  };
+
   // Add listener for background check notifications
   useEffect(() => {
     if (Capacitor.isNativePlatform()) {
@@ -430,7 +553,16 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
       updateSettings,
       scheduleEventReminders,
       recordOptIn,
-      unreadCount
+      unreadCount,
+      // Debug functions
+      testNotification,
+      testEventReminder,
+      testParticipationReminder,
+      testStandbyNotification,
+      getScheduledNotifications,
+      clearScheduledNotifications,
+      getOptInRecords,
+      clearOptInRecords
     }}>
       {children}
     </NotificationContext.Provider>

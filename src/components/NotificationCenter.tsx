@@ -1,5 +1,5 @@
 import React from 'react';
-import { Bell, X, CheckCircle, Calendar, User } from 'lucide-react';
+import { Bell, X, CheckCircle, Calendar, User, Trash2 } from 'lucide-react';
 import { useNotifications } from '@/contexts/NotificationContext';
 import { useSettings } from '@/contexts/SettingsContext';
 import { Button } from '@/components/ui/button';
@@ -25,32 +25,34 @@ const NotificationCenter = () => {
   };
 
   return (
-    <div className="w-full max-w-md mx-auto bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700">
-      <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
-        <div className="flex items-center gap-2">
-          <Bell className="h-5 w-5 text-sro-olive" />
-          <h3 className="font-semibold text-sro-granite dark:text-white">
-            {t('notifications')}
-          </h3>
-          {unreadCount > 0 && (
-            <Badge variant="destructive" className="text-xs">
-              {unreadCount}
-            </Badge>
-          )}
-        </div>
-        {notifications.length > 0 && (
+    <div className="h-full flex flex-col">
+      <div className="flex items-center gap-2 p-4 border-b border-gray-200 dark:border-gray-700">
+        <Bell className="h-5 w-5 text-sro-olive" />
+        <h3 className="font-semibold text-sro-granite dark:text-white">
+          {t('notifications')}
+        </h3>
+        {unreadCount > 0 && (
+          <Badge variant="destructive" className="text-xs">
+            {unreadCount}
+          </Badge>
+        )}
+      </div>
+
+      {notifications.length > 0 && (
+        <div className="px-4 py-2 border-b border-gray-100 dark:border-gray-700">
           <Button
             variant="ghost"
             size="sm"
             onClick={clearAll}
-            className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+            className="h-6 px-2 text-xs text-gray-400 hover:text-red-500 dark:text-gray-500 dark:hover:text-red-400 opacity-60 hover:opacity-100 transition-all"
           >
-            <X className="h-4 w-4" />
+            <Trash2 className="h-3 w-3 mr-1" />
+            {t('clearAll')}
           </Button>
-        )}
-      </div>
+        </div>
+      )}
 
-      <ScrollArea className="h-96">
+      <ScrollArea className="flex-1">
         {notifications.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-8 text-gray-500 dark:text-gray-400">
             <Bell className="h-8 w-8 mb-2 opacity-50" />

@@ -8,8 +8,8 @@ const ProfileView = () => {
   const { userName, setUserName, t } = useSettings();
 
   return (
-    <div className="w-full max-w-md mx-auto bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700">
-      <div className="px-4 py-6">
+    <div className="h-full flex flex-col">
+      <div className="flex-1 px-4 py-6">
         <div className="mb-6">
           <div className="flex items-center mb-4">
             <User className="h-6 w-6 text-sro-olive mr-3" />

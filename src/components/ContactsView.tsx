@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Users, Phone, Mail, RefreshCw, Wifi } from 'lucide-react';
+import { useSettings } from '@/contexts/SettingsContext';
 
 interface Contact {
   name: string;
@@ -8,6 +9,7 @@ interface Contact {
 }
 
 const ContactsView = () => {
+  const { t } = useSettings();
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -88,7 +90,7 @@ const ContactsView = () => {
         setError(null);
       } catch (err) {
         console.error('Error loading contacts:', err);
-        setError('Virhe ladattaessa yhteystietoja Google Sheetsistä');
+        setError(t('errorLoadingContacts'));
       } finally {
         setLoading(false);
       }
@@ -106,7 +108,7 @@ const ContactsView = () => {
       setError(null);
     } catch (err) {
       console.error('Error refreshing contacts:', err);
-      setError('Virhe ladattaessa yhteystietoja Google Sheetsistä');
+      setError(t('errorLoadingContacts'));
     } finally {
       setLoading(false);
     }
@@ -117,7 +119,7 @@ const ContactsView = () => {
       <div className="px-4 py-8">
         <div className="text-center">
           <RefreshCw className="h-8 w-8 text-sro-olive mx-auto mb-4 animate-spin" />
-          <p className="text-gray-600 dark:text-gray-300">Ladataan yhteystietoja...</p>
+          <p className="text-gray-600 dark:text-gray-300">{t('loadingContacts')}</p>
         </div>
       </div>
     );
@@ -133,7 +135,7 @@ const ContactsView = () => {
             onClick={refreshData}
             className="bg-sro-olive text-white px-4 py-2 rounded-lg hover:bg-sro-olive/90 transition-colors"
           >
-            Yritä uudelleen
+            {t('tryAgain')}
           </button>
         </div>
       </div>
@@ -144,8 +146,8 @@ const ContactsView = () => {
     <div className="px-4 py-6">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h2 className="text-xl font-bree font-bold text-sro-granite dark:text-white">Vapaaehtoiset</h2>
-          <p className="text-sm text-gray-600 dark:text-gray-400">SRO Striimitiimin yhteystiedot</p>
+          <h2 className="text-xl font-bree font-bold text-sro-granite dark:text-white">{t('contacts')}</h2>
+          <p className="text-sm text-gray-600 dark:text-gray-400">{t('contactsDescription')}</p>
         </div>
         <button 
           onClick={refreshData}
@@ -204,7 +206,7 @@ const ContactsView = () => {
       {contacts.length === 0 && !loading && (
         <div className="text-center py-12">
           <Users className="h-12 w-12 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
-          <p className="text-gray-500 dark:text-gray-400">Ei yhteystietoja saatavilla</p>
+          <p className="text-gray-500 dark:text-gray-400">{t('noContactsAvailable')}</p>
         </div>
       )}
     </div>

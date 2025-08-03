@@ -61,6 +61,7 @@ export const translations = {
     // Notifications
     notifications: "Ilmoitukset",
     noNotifications: "Ei ilmoituksia",
+    clearAll: "Tyhjennä kaikki",
     welcomeNotificationTitle: "Tervetuloa SRO Tech -sovellukseen!",
     welcomeNotificationMessage: "Hei {name}! Olet nyt valmis hallitsemaan vapaaehtoistöitäsi.",
     eventReminderTitle: "Tapahtuma tarvitsee vapaaehtoisia",
@@ -86,13 +87,33 @@ export const translations = {
     nextEvent: "Seuraava",
     upcomingEvents: "Tulevat tapahtumat",
     
+    // Debug Menu
+    debugMenu: "Kehittäjävalikko",
+    debugMenuDescription: "Testaa ja vianmääritä sovelluksen toimintoja",
+    testNotifications: "Testaa ilmoituksia",
+    testBasicNotification: "Testi-ilmoitus",
+    testEventReminder: "Testaa tapahtumailmoitusta",
+    testParticipationReminder: "Testaa osallistumismuistutusta",
+    testStandbyNotification: "Testaa valmiustila-ilmoitusta",
+    testStandbyDescription: "Lähettää ilmoituksen 1 minuutin kuluttua",
+    scheduledNotifications: "Ajoitetut ilmoitukset",
+    viewScheduledNotifications: "Näytä ajoitetut",
+    clearScheduledNotifications: "Tyhjennä ajoitetut",
+    optInRecords: "Ilmoittautumistiedot",
+    viewOptInRecords: "Näytä ilmoittautumiset",
+    clearOptInRecords: "Tyhjennä ilmoittautumiset",
+    debugInfo: "Virheenkorjaustiedot",
+    noScheduledNotifications: "Ei ajastettuja ilmoituksia",
+    scheduledNotificationsCount: "Ajastettuja ilmoituksia",
+    optInRecordsCount: "Ilmoittautumisia",
+    
     // Languages
     languages: {
       fi: "Suomi",
       en: "English",
       sv: "Svenska",
       ar: "العربية",
-      cat: "🐱 Cat"
+      cat: "Lolcat"
     }
   },
   en: {
@@ -156,6 +177,7 @@ export const translations = {
     // Notifications
     notifications: "Notifications",
     noNotifications: "No notifications",
+    clearAll: "Clear All",
     welcomeNotificationTitle: "Welcome to SRO Tech!",
     welcomeNotificationMessage: "Hi {name}! You're now ready to manage your volunteer work.",
     eventReminderTitle: "Event needs volunteers",
@@ -181,13 +203,33 @@ export const translations = {
     nextEvent: "Next",
     upcomingEvents: "Upcoming Events",
     
+    // Debug Menu
+    debugMenu: "Debug Menu",
+    debugMenuDescription: "Test and debug application features",
+    testNotifications: "Test Notifications",
+    testBasicNotification: "Test Notification",
+    testEventReminder: "Test Event Reminder",
+    testParticipationReminder: "Test Participation Reminder",
+    testStandbyNotification: "Test Standby Notification",
+    testStandbyDescription: "Sends a notification after 1 minute",
+    scheduledNotifications: "Scheduled Notifications",
+    viewScheduledNotifications: "View Scheduled",
+    clearScheduledNotifications: "Clear Scheduled",
+    optInRecords: "Opt-in Records",
+    viewOptInRecords: "View Opt-ins",
+    clearOptInRecords: "Clear Opt-ins",
+    debugInfo: "Debug Info",
+    noScheduledNotifications: "No scheduled notifications",
+    scheduledNotificationsCount: "Scheduled notifications",
+    optInRecordsCount: "Opt-in records",
+    
     // Languages
     languages: {
-      fi: "Finnish",
+      fi: "Suomi",
       en: "English",
-      sv: "Swedish",
-      ar: "Arabic",
-      cat: "🐱 Cat"
+      sv: "Svenska",
+      ar: "العربية",
+      cat: "Lolcat"
     }
   },
   sv: {
@@ -251,6 +293,7 @@ export const translations = {
     // Notifications
     notifications: "Notifikationer",
     noNotifications: "Inga notifikationer",
+    clearAll: "Rensa alla",
     welcomeNotificationTitle: "Välkommen till SRO Tech!",
     welcomeNotificationMessage: "Hej {name}! Du är nu redo att hantera ditt volontärarbete.",
     eventReminderTitle: "Evenemang behöver volontärer",
@@ -276,13 +319,33 @@ export const translations = {
     nextEvent: "Nästa",
     upcomingEvents: "Kommande events",
     
+    // Debug Menu
+    debugMenu: "Debug-meny",
+    debugMenuDescription: "Testa och felsök applikationsfunktioner",
+    testNotifications: "Testa notifikationer",
+    testBasicNotification: "Test-notifikation",
+    testEventReminder: "Testa eventpåminnelse",
+    testParticipationReminder: "Testa deltagandepåminnelse",
+    testStandbyNotification: "Testa standby-notifikation",
+    testStandbyDescription: "Skickar en notifikation efter 1 minut",
+    scheduledNotifications: "Schemalagda notifikationer",
+    viewScheduledNotifications: "Visa schemalagda",
+    clearScheduledNotifications: "Rensa schemalagda",
+    optInRecords: "Anmälningsuppgifter",
+    viewOptInRecords: "Visa anmälningar",
+    clearOptInRecords: "Rensa anmälningar",
+    debugInfo: "Debug-info",
+    noScheduledNotifications: "Inga schemalagda notifikationer",
+    scheduledNotificationsCount: "Schemalagda notifikationer",
+    optInRecordsCount: "Anmälningsuppgifter",
+    
     // Languages
     languages: {
-      fi: "Finska",
-      en: "Engelska",
+      fi: "Suomi",
+      en: "English",
       sv: "Svenska",
-      ar: "Arabiska",
-      cat: "🐱 Cat"
+      ar: "العربية",
+      cat: "Lolcat"
     }
   },
   ar: {
@@ -346,6 +409,7 @@ export const translations = {
     // Notifications
     notifications: "الإشعارات",
     noNotifications: "لا توجد إشعارات",
+    clearAll: "مسح الكل",
     welcomeNotificationTitle: "مرحباً بك في SRO Tech!",
     welcomeNotificationMessage: "مرحباً {name}! أنت الآن جاهز لإدارة عملك التطوعي.",
     eventReminderTitle: "الحدث يحتاج متطوعين",
@@ -371,13 +435,33 @@ export const translations = {
     nextEvent: "التالي",
     upcomingEvents: "الأحداث القادمة",
     
+    // Debug Menu
+    debugMenu: "قائمة التصحيح",
+    debugMenuDescription: "اختبار وتصحيح ميزات التطبيق",
+    testNotifications: "اختبار الإشعارات",
+    testBasicNotification: "إشعار تجريبي",
+    testEventReminder: "اختبار تذكير الحدث",
+    testParticipationReminder: "اختبار تذكير المشاركة",
+    testStandbyNotification: "اختبار إشعار الاستعداد",
+    testStandbyDescription: "يرسل إشعاراً بعد دقيقة واحدة",
+    scheduledNotifications: "الإشعارات المجدولة",
+    viewScheduledNotifications: "عرض المجدولة",
+    clearScheduledNotifications: "مسح المجدولة",
+    optInRecords: "سجلات التسجيل",
+    viewOptInRecords: "عرض التسجيلات",
+    clearOptInRecords: "مسح التسجيلات",
+    debugInfo: "معلومات التصحيح",
+    noScheduledNotifications: "لا توجد إشعارات مجدولة",
+    scheduledNotificationsCount: "الإشعارات المجدولة",
+    optInRecordsCount: "سجلات التسجيل",
+    
     // Languages
     languages: {
-      fi: "الفنلندية",
-      en: "الإنجليزية",
-      sv: "السويدية",
+      fi: "Suomi",
+      en: "English",
+      sv: "Svenska",
       ar: "العربية",
-      cat: "🐱 Cat"
+      cat: "Lolcat"
     }
   },
   cat: {
@@ -441,6 +525,7 @@ export const translations = {
     // Notifications
     notifications: "purr-notifikashunz",
     noNotifications: "no mesagez frm da pack",
+    clearAll: "cler al meowz",
     welcomeNotificationTitle: "welcm 2 da cat pack!",
     welcomeNotificationMessage: "oh hai {name}! u iz nao redeh 4 epic cat-venturz.",
     eventReminderTitle: "mision nedz moar catz",
@@ -466,13 +551,33 @@ export const translations = {
     nextEvent: "nex meow",
     upcomingEvents: "futur purr-ventz",
     
+    // Debug Menu
+    debugMenu: "debug kitteh menu",
+    debugMenuDescription: "test n debug mai purr-aplikashun featurz",
+    testNotifications: "test mai purr-notifikashunz",
+    testBasicNotification: "test meow-sage",
+    testEventReminder: "test purr-vent remindr",
+    testParticipationReminder: "test kitteh parti-si-pashun remindr",
+    testStandbyNotification: "test standbi purr-notifikashun",
+    testStandbyDescription: "sendz meow-sage aftr 1 minyut",
+    scheduledNotifications: "scheduld purr-notifikashunz",
+    viewScheduledNotifications: "sho scheduld meowz",
+    clearScheduledNotifications: "cler scheduld purrs",
+    optInRecords: "kitteh opt-in recordz",
+    viewOptInRecords: "sho kitteh opt-inz",
+    clearOptInRecords: "cler kitteh recordz",
+    debugInfo: "debug kitteh infoz",
+    noScheduledNotifications: "no scheduld purr-notifikashunz",
+    scheduledNotificationsCount: "scheduld purr-notifikashunz",
+    optInRecordsCount: "kitteh opt-in recordz",
+    
     // Languages
     languages: {
-      fi: "Finishez",
-      en: "Englishez",
-      sv: "Swedishez",
-      ar: "Arabicz",
-      cat: "🐱 Lolcat"
+      fi: "Suomi",
+      en: "English",
+      sv: "Svenska",
+      ar: "العربية",
+      cat: "Lolcat"
     }
   }
 };
