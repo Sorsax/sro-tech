@@ -477,32 +477,32 @@ const EventScheduleView = () => {
             );
           })()
         ) : (
-          // Show all events
+          // Show all events with smaller cards
           getFilteredEvents().map((item, index) => (
             <div
               key={index}
-              className="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700 shadow-sm"
+              className="bg-gray-50 dark:bg-gray-800/50 rounded-lg p-3 border border-gray-200 dark:border-gray-700"
             >
-              <div className="flex items-start justify-between mb-2">
-                <div className="flex items-center text-sro-olive font-semibold">
-                  <Clock className="h-4 w-4 mr-2" />
+              <div className="flex items-start justify-between mb-1">
+                <div className="flex items-center text-sro-olive font-medium text-sm">
+                  <Clock className="h-3 w-3 mr-1" />
                   {item.time}
                 </div>
                 {item.duration && (
-                  <div className="flex items-center text-gray-500 dark:text-gray-400 text-sm">
-                    <Timer className="h-3 w-3 mr-1" />
+                  <div className="flex items-center text-gray-500 dark:text-gray-400 text-xs">
+                    <Timer className="h-2 w-2 mr-1" />
                     {item.duration}
                   </div>
                 )}
               </div>
               
-              <h3 className="font-medium text-sro-granite dark:text-white mb-2">
+              <h5 className="font-medium text-sro-granite dark:text-white text-sm mb-1">
                 {item.what}
-              </h3>
+              </h5>
               
               {item.where && (
-                <div className="flex items-center text-gray-600 dark:text-gray-400 text-sm">
-                  <MapPin className="h-3 w-3 mr-1" />
+                <div className="flex items-center text-gray-500 dark:text-gray-500 text-xs">
+                  <MapPin className="h-2 w-2 mr-1" />
                   {item.where}
                 </div>
               )}
