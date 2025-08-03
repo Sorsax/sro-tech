@@ -152,11 +152,7 @@ const EventScheduleView = () => {
     localStorage.setItem('eventSchedule_showAllEvents', showAllEvents.toString());
   }, [showAllEvents]);
 
-  useEffect(() => {
-    if (selectedEvent === 'HSP 2025') {
-      loadAllSheetData();
-    }
-  }, [selectedEvent]);
+  // Removed auto-loading on mount - only load via manual refresh button
 
   const getCurrentSheet = () => {
     const targetDateStr = selectedDate;
