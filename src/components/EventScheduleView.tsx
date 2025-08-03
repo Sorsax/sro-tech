@@ -90,17 +90,15 @@ const EventScheduleView = () => {
       
       for (let i = startIndex; i < lines.length; i++) {
         const line = lines[i].trim();
-        if (line) {
-          const columns = parseCSVLine(line);
-          
-          if (columns.length >= 4 && isValidTime(columns[0])) {
-            data.push({
-              time: columns[0] || '',
-              what: columns[1] || '',
-              where: columns[2] || '',
-              duration: columns[3] || ''
-            });
-          }
+        const columns = parseCSVLine(line);
+        
+        if (columns.length >= 4 && isValidTime(columns[0])) {
+          data.push({
+            time: columns[0] || '',
+            what: columns[1] || '',
+            where: columns[2] || '',
+            duration: columns[3] || ''
+          });
         }
       }
       
