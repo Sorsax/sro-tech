@@ -186,7 +186,7 @@ const EventScheduleView = () => {
     }
     
     console.log('No sheet found for date:', targetDateStr);
-    return null;
+    return sheets.find(s => s.name === 'PE 15.8'); // Default to Friday
   };
 
   const getCurrentTime = () => {
@@ -225,15 +225,16 @@ const EventScheduleView = () => {
     return nextEvent ? [nextEvent] : [];
   };
 
-  const getCurrentAndNextEvents = () => {
+  const getCurrentAndUpcomingEvents = () => {
     const currentSheet = getCurrentSheet();
-    if (!currentSheet || !scheduleData[currentSheet.name]) return { current: null, next: null };
+    if (!currentSheet || !scheduleData[currentSheet.name]) return { current: null, next: null, upcoming: [] };
     
     const events = scheduleData[currentSheet.name];
     const currentTime = getCurrentTime();
     
     let currentEvent = null;
     let nextEvent = null;
+    const upcomingEvents = [];
     
     for (let i = 0; i < events.length; i++) {
       const eventTime = parseTime(events[i].time);
@@ -242,14 +243,22 @@ const EventScheduleView = () => {
       if (eventTime <= currentTime && (nextEventTime === null || currentTime < nextEventTime)) {
         currentEvent = events[i];
         nextEvent = events[i + 1] || null;
+        // Get upcoming events after next
+        for (let j = i + 2; j < events.length; j++) {
+          upcomingEvents.push(events[j]);
+        }
         break;
       } else if (eventTime > currentTime && !nextEvent) {
         nextEvent = events[i];
+        // Get upcoming events after next
+        for (let j = i + 1; j < events.length; j++) {
+          upcomingEvents.push(events[j]);
+        }
         break;
       }
     }
     
-    return { current: currentEvent, next: nextEvent };
+    return { current: currentEvent, next: nextEvent, upcoming: upcomingEvents };
   };
 
   const availableDates = ['2025-08-15', '2025-08-16', '2025-08-17'];
@@ -362,9 +371,9 @@ const EventScheduleView = () => {
       {/* Schedule Events */}
       <div className="space-y-4">
         {!showAllEvents ? (
-          // Show current and next events with indicators
+          // Show current, next and upcoming events with indicators
           (() => {
-            const { current, next } = getCurrentAndNextEvents();
+            const { current, next, upcoming } = getCurrentAndUpcomingEvents();
             return (
               <>
                 {current && (
@@ -426,6 +435,44 @@ const EventScheduleView = () => {
                         {next.where}
                       </div>
                     )}
+                  </div>
+                )}
+
+                {upcoming.length > 0 && (
+                  <div className="space-y-2">
+                    <h4 className="text-sm font-medium text-gray-600 dark:text-gray-400 px-2">
+                      {t('upcomingEvents')}
+                    </h4>
+                    {upcoming.slice(0, 3).map((item, index) => (
+                      <div
+                        key={index}
+                        className="bg-gray-50 dark:bg-gray-800/50 rounded-lg p-3 border border-gray-200 dark:border-gray-700"
+                      >
+                        <div className="flex items-start justify-between mb-1">
+                          <div className="flex items-center text-gray-600 dark:text-gray-400 font-medium text-sm">
+                            <Clock className="h-3 w-3 mr-1" />
+                            {item.time}
+                          </div>
+                          {item.duration && (
+                            <div className="flex items-center text-gray-500 dark:text-gray-500 text-xs">
+                              <Timer className="h-2 w-2 mr-1" />
+                              {item.duration}
+                            </div>
+                          )}
+                        </div>
+                        
+                        <h5 className="font-medium text-sro-granite dark:text-white text-sm mb-1">
+                          {item.what}
+                        </h5>
+                        
+                        {item.where && (
+                          <div className="flex items-center text-gray-500 dark:text-gray-500 text-xs">
+                            <MapPin className="h-2 w-2 mr-1" />
+                            {item.where}
+                          </div>
+                        )}
+                      </div>
+                    ))}
                   </div>
                 )}
               </>

@@ -84,6 +84,7 @@ export const translations = {
     enableNotifications: "Ota ilmoitukset käyttöön",
     currentEvent: "Meneillään",
     nextEvent: "Seuraava",
+    upcomingEvents: "Tulevat tapahtumat",
     
     // Languages
     languages: {
@@ -178,6 +179,7 @@ export const translations = {
     enableNotifications: "Enable notifications",
     currentEvent: "Current",
     nextEvent: "Next",
+    upcomingEvents: "Upcoming Events",
     
     // Languages
     languages: {
@@ -272,6 +274,7 @@ export const translations = {
     enableNotifications: "Aktivera notifikationer",
     currentEvent: "Pågående",
     nextEvent: "Nästa",
+    upcomingEvents: "Kommande events",
     
     // Languages
     languages: {
@@ -366,6 +369,7 @@ export const translations = {
     enableNotifications: "تمكين الإشعارات",
     currentEvent: "الحالي",
     nextEvent: "التالي",
+    upcomingEvents: "الأحداث القادمة",
     
     // Languages
     languages: {
@@ -460,6 +464,7 @@ export const translations = {
     enableNotifications: "Enable purr-notifications",
     currentEvent: "Purr-rent",
     nextEvent: "Next Meow",
+    upcomingEvents: "Future Purr-vents",
     
     // Languages
     languages: {
