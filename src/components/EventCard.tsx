@@ -1,6 +1,7 @@
 import { Calendar, Users, UserCheck, StickyNote, UserPlus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useSettings } from '@/contexts/SettingsContext';
+import { useNotifications } from '@/contexts/NotificationContext';
 import { useState } from 'react';
 import { useToast } from '@/components/ui/use-toast';
 
@@ -16,6 +17,7 @@ interface EventCardProps {
 
 const EventCard = ({ date, event, volunteers, backup, notes, index, onOptInSuccess }: EventCardProps) => {
   const { userName, useCustomOptInUrl, customOptInUrl, t } = useSettings();
+  const { recordOptIn } = useNotifications();
   const { toast } = useToast();
   const [isOptingIn, setIsOptingIn] = useState(false);
 
@@ -109,6 +111,9 @@ const EventCard = ({ date, event, volunteers, backup, notes, index, onOptInSucce
         title: t('optInSuccess') || "Ilmoittautuminen onnistui!",
         description: `${t('optInSuccessDesc') || "Olet nyt ilmoittautunut tapahtumaan"}: ${event}`,
       });
+
+      // Record the opt-in for background notification checking
+      recordOptIn(date, event, userName);
 
       if (onOptInSuccess) {
         onOptInSuccess(date, userName);

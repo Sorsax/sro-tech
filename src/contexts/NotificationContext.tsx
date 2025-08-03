@@ -6,6 +6,13 @@ import { useSettings } from './SettingsContext';
 import { Notification, NotificationSettings } from '@/types/notifications';
 import { useToast } from '@/hooks/use-toast';
 
+interface OptInRecord {
+  eventDate: string;
+  eventName: string;
+  optInDate: string;
+  userName: string;
+}
+
 interface NotificationContextType {
   notifications: Notification[];
   notificationSettings: NotificationSettings;
@@ -14,6 +21,7 @@ interface NotificationContextType {
   clearAll: () => void;
   updateSettings: (settings: Partial<NotificationSettings>) => void;
   scheduleEventReminders: (events: any[]) => void;
+  recordOptIn: (eventDate: string, eventName: string, userName: string) => void;
   unreadCount: number;
 }
 
@@ -161,35 +169,44 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
     const now = new Date();
     const scheduledNotifications: any[] = [];
 
+    // Clear existing scheduled notifications first
+    if (Capacitor.isNativePlatform()) {
+      LocalNotifications.getPending().then(({ notifications }) => {
+        const ids = notifications.map(n => n.id);
+        if (ids.length > 0) {
+          LocalNotifications.cancel({ notifications: ids.map(id => ({ id })) });
+        }
+      });
+    }
+
     events.forEach(event => {
       const eventDate = new Date(event.date.split('.').reverse().join('-'));
-      const dayBefore = new Date(eventDate);
-      dayBefore.setDate(dayBefore.getDate() - 1);
-      dayBefore.setHours(7, 0, 0, 0); // 10:00 GMT+3 = 7:00 UTC
+      
+      // Schedule background check 2 minutes before the notification time
+      const checkTime = new Date(eventDate);
+      checkTime.setDate(checkTime.getDate() - 1);
+      checkTime.setHours(6, 58, 0, 0); // 6:58 AM UTC (2 minutes before notification)
+      
+      // Schedule actual notification time
+      const notificationTime = new Date(eventDate);
+      notificationTime.setDate(notificationTime.getDate() - 1);
+      notificationTime.setHours(7, 0, 0, 0); // 7:00 AM UTC
 
       // Only schedule future notifications
-      if (dayBefore > now) {
-        // Check if event needs volunteers (excluding backup)
-        const hasVolunteers = event.volunteers && event.volunteers.trim() !== '';
-        
-        if (!hasVolunteers) {
-          scheduledNotifications.push({
-            title: t('eventReminderTitle'),
-            body: t('eventReminderMessage').replace('{event}', event.event).replace('{date}', event.date),
-            id: parseInt(`${eventDate.getTime()}${Math.random() * 1000}`),
-            schedule: { at: dayBefore }
-          });
-        }
-
-        // Check if user is participating
-        if (hasVolunteers && userName && event.volunteers.includes(userName)) {
-          scheduledNotifications.push({
-            title: t('participationReminderTitle'),
-            body: t('participationReminderMessage').replace('{event}', event.event).replace('{date}', event.date),
-            id: parseInt(`${eventDate.getTime()}${Math.random() * 1000}`),
-            schedule: { at: dayBefore }
-          });
-        }
+      if (checkTime > now) {
+        // Schedule background check
+        scheduledNotifications.push({
+          title: "Background Check",
+          body: "Checking event status",
+          id: parseInt(`${eventDate.getTime()}999`),
+          schedule: { at: checkTime },
+          extra: {
+            type: 'background_check',
+            eventDate: event.date,
+            eventName: event.event,
+            notificationTime: notificationTime.toISOString()
+          }
+        });
       }
     });
 
@@ -199,9 +216,205 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
         notifications: scheduledNotifications
       });
     }
+
+    console.log(`Scheduled ${scheduledNotifications.length} background checks`);
+  };
+
+  // New function to record opt-ins
+  const recordOptIn = (eventDate: string, eventName: string, userName: string) => {
+    const optInRecord: OptInRecord = {
+      eventDate,
+      eventName,
+      optInDate: new Date().toISOString(),
+      userName
+    };
+
+    const existingOptIns = JSON.parse(localStorage.getItem('eventOptIns') || '[]');
+    const updatedOptIns = existingOptIns.filter((record: OptInRecord) => 
+      !(record.eventDate === eventDate && record.userName === userName)
+    );
+    updatedOptIns.push(optInRecord);
+    
+    localStorage.setItem('eventOptIns', JSON.stringify(updatedOptIns));
+    console.log('Recorded opt-in:', optInRecord);
+  };
+
+  // Function to fetch Google Sheets data (same as ScheduleView)
+  const fetchGoogleSheetData = async (year: string = '2025') => {
+    const SHEET_ID = '1iZfopLSu7IxqF-15TYT21xEfvX_Q1-Z1OX8kzagGrDg';
+    
+    const parseCSVLine = (line: string): string[] => {
+      const result: string[] = [];
+      let current = '';
+      let inQuotes = false;
+      
+      for (let i = 0; i < line.length; i++) {
+        const char = line[i];
+        
+        if (char === '"') {
+          inQuotes = !inQuotes;
+        } else if (char === ',' && !inQuotes) {
+          result.push(current.trim());
+          current = '';
+        } else {
+          current += char;
+        }
+      }
+      
+      result.push(current.trim());
+      return result;
+    };
+
+    try {
+      console.log('Background fetching data from Google Sheets for year:', year);
+      
+      const csvUrl = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${year}`;
+      
+      const response = await fetch(csvUrl);
+      if (!response.ok) {
+        throw new Error(`Failed to fetch sheet data for year ${year}`);
+      }
+      
+      const csvText = await response.text();
+      const lines = csvText.split('\n');
+      const data: any[] = [];
+      
+      for (let i = 2; i < lines.length; i++) {
+        const line = lines[i].trim();
+        if (line) {
+          const columns = parseCSVLine(line);
+          
+          if (columns.length >= 5 && columns[0]) {
+            data.push({
+              date: columns[0] || '',
+              event: columns[1] || '',
+              volunteers: columns[2] || '',
+              backup: columns[3] || '',
+              notes: columns[4] || ''
+            });
+          }
+        }
+      }
+      
+      return data;
+    } catch (error) {
+      console.error('Error in background fetch:', error);
+      return [];
+    }
+  };
+
+  // Function to handle background check and send notification
+  const handleBackgroundCheck = async (eventDate: string, eventName: string, scheduledNotificationTime: string) => {
+    try {
+      console.log('Performing background check for event:', eventName, eventDate);
+      
+      // Fetch latest data
+      const currentYear = new Date().getFullYear().toString();
+      const events = await fetchGoogleSheetData(currentYear);
+      
+      // Find the specific event
+      const event = events.find(e => e.date === eventDate && e.event === eventName);
+      
+      if (!event) {
+        console.log('Event not found in current data, skipping notification');
+        return;
+      }
+
+      // Get stored opt-ins
+      const optIns: OptInRecord[] = JSON.parse(localStorage.getItem('eventOptIns') || '[]');
+      const userOptedIn = optIns.some(record => 
+        record.eventDate === eventDate && 
+        record.eventName === eventName && 
+        record.userName === userName
+      );
+
+      // Check current volunteer status
+      const hasVolunteers = event.volunteers && event.volunteers.trim() !== '';
+      const userInVolunteers = hasVolunteers && userName && event.volunteers.includes(userName);
+
+      // Clean up opt-ins if user is no longer in volunteers list
+      if (userOptedIn && !userInVolunteers) {
+        const cleanedOptIns = optIns.filter(record => 
+          !(record.eventDate === eventDate && record.eventName === eventName && record.userName === userName)
+        );
+        localStorage.setItem('eventOptIns', JSON.stringify(cleanedOptIns));
+        console.log('Removed opt-in record for user no longer in volunteers list');
+      }
+
+      // Determine which notification to send
+      let notificationToSend = null;
+
+      if (!hasVolunteers && notificationSettings.eventReminders) {
+        // Event needs volunteers
+        notificationToSend = {
+          title: t('eventReminderTitle'),
+          body: t('eventReminderMessage').replace('{event}', event.event).replace('{date}', event.date),
+          id: parseInt(`${Date.now()}${Math.random() * 1000}`),
+          schedule: { at: new Date(scheduledNotificationTime) }
+        };
+      } else if ((userInVolunteers || userOptedIn) && notificationSettings.participationReminders) {
+        // User is participating
+        notificationToSend = {
+          title: t('participationReminderTitle'),
+          body: t('participationReminderMessage').replace('{event}', event.event).replace('{date}', event.date),
+          id: parseInt(`${Date.now()}${Math.random() * 1000}`),
+          schedule: { at: new Date(scheduledNotificationTime) }
+        };
+      }
+
+      // Schedule the actual notification
+      if (notificationToSend && Capacitor.isNativePlatform()) {
+        await LocalNotifications.schedule({
+          notifications: [notificationToSend]
+        });
+        console.log('Scheduled notification after background check:', notificationToSend.title);
+        
+        // Also add to in-app notifications
+        addNotification({
+          title: notificationToSend.title,
+          message: notificationToSend.body,
+          type: !hasVolunteers ? 'event_reminder' : 'participation_reminder'
+        });
+      }
+
+    } catch (error) {
+      console.error('Error in background check:', error);
+    }
   };
 
   const unreadCount = notifications.filter(n => !n.read).length;
+
+  // Add listener for background check notifications
+  useEffect(() => {
+    if (Capacitor.isNativePlatform()) {
+      let listenerHandle: any;
+      
+      const setupListener = async () => {
+        listenerHandle = await LocalNotifications.addListener('localNotificationReceived', (notification) => {
+          const extra = notification.extra;
+          if (extra && extra.type === 'background_check') {
+            // Handle background check
+            handleBackgroundCheck(extra.eventDate, extra.eventName, extra.notificationTime);
+          } else {
+            // Regular notification handling
+            addNotification({
+              title: notification.title,
+              message: notification.body,
+              type: 'event_reminder'
+            });
+          }
+        });
+      };
+
+      setupListener();
+
+      return () => {
+        if (listenerHandle) {
+          listenerHandle.remove();
+        }
+      };
+    }
+  }, []);
 
   return (
     <NotificationContext.Provider value={{
@@ -212,6 +425,7 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
       clearAll,
       updateSettings,
       scheduleEventReminders,
+      recordOptIn,
       unreadCount
     }}>
       {children}

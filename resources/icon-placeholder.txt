@@ -1,0 +1,13 @@
+# This is a placeholder for your main app icon
+# Replace this file with your actual icon.png (1024x1024px)
+# 
+# Requirements:
+# - Size: 1024x1024 pixels
+# - Format: PNG
+# - No transparency (use solid background)
+# - Square format
+# 
+# You can use your existing logo from:
+# /public/lovable-uploads/b207cc73-0425-49e9-9a42-ff0709f466c8.png
+# 
+# Just resize it to 1024x1024px and save as icon.png
