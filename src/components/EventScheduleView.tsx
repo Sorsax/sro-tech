@@ -24,7 +24,10 @@ const EventScheduleView = () => {
   const [selectedDate, setSelectedDate] = useState(() => {
     return localStorage.getItem('eventSchedule_selectedDate') || new Date().toISOString().split('T')[0];
   });
-  const [scheduleData, setScheduleData] = useState<SheetData>({});
+  const [scheduleData, setScheduleData] = useState<SheetData>(() => {
+    const stored = localStorage.getItem('eventSchedule_data');
+    return stored ? JSON.parse(stored) : {};
+  });
   const [loading, setLoading] = useState(false);
   const [showAllEvents, setShowAllEvents] = useState(() => {
     return localStorage.getItem('eventSchedule_showAllEvents') === 'true';
@@ -36,10 +39,10 @@ const EventScheduleView = () => {
   const SHEET_ID = '14yS8Bce2T06AQQCi2tGVxCNZA8eZpvGM';
   
   const sheets = [
-    { name: 'PE 15.8', date: '2025-08-15', label: t('friday') + ' 15.8', startRow: 6 },
-    { name: 'LA 16.8 Sibelius-sali', date: '2025-08-16', label: t('saturday') + ' 16.8 - Sibelius', arena: 'Sibelius-sali', startRow: 5 },
-    { name: 'LA 16.8 Aho-sali', date: '2025-08-16', label: t('saturday') + ' 16.8 - Aho', arena: 'Aho-sali', startRow: 5 },
-    { name: 'SU 17.8', date: '2025-08-17', label: t('sunday') + ' 17.8', startRow: 6 }
+    { name: 'PE 15.8', gid: '1894656914', date: '2025-08-15', label: t('friday') + ' 15.8', startRow: 6 },
+    { name: 'LA 16.8 Sibelius-sali', gid: '204838078', date: '2025-08-16', label: t('saturday') + ' 16.8 - Sibelius', arena: 'Sibelius-sali', startRow: 5 },
+    { name: 'LA 16.8 Aho-sali', gid: '493893366', date: '2025-08-16', label: t('saturday') + ' 16.8 - Aho', arena: 'Aho-sali', startRow: 5 },
+    { name: 'SU 17.8', gid: '579178101', date: '2025-08-17', label: t('sunday') + ' 17.8', startRow: 6 }
   ];
 
   const parseCSVLine = (line: string): string[] => {
@@ -70,22 +73,20 @@ const EventScheduleView = () => {
     return /\d/.test(timeStr) && (timeStr.includes(':') || timeStr.includes('.'));
   };
 
-  const fetchSheetData = async (sheetName: string): Promise<ScheduleItem[]> => {
+  const fetchSheetData = async (sheet: any): Promise<ScheduleItem[]> => {
     try {
-      const csvUrl = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(sheetName)}`;
+      const csvUrl = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${sheet.gid}`;
       
       const response = await fetch(csvUrl);
       if (!response.ok) {
-        throw new Error(`Failed to fetch sheet data for ${sheetName}`);
+        throw new Error(`Failed to fetch sheet data for ${sheet.name}`);
       }
       
       const csvText = await response.text();
       const lines = csvText.split('\n');
       const data: ScheduleItem[] = [];
       
-      // Find the correct starting row for this sheet
-      const sheet = sheets.find(s => s.name === sheetName);
-      const startIndex = sheet ? sheet.startRow - 1 : 5; // Convert to 0-based index
+      const startIndex = sheet.startRow - 1; // Convert to 0-based index
       
       for (let i = startIndex; i < lines.length; i++) {
         const line = lines[i].trim();
@@ -103,7 +104,7 @@ const EventScheduleView = () => {
         }
       }
       
-      console.log(`Fetched ${data.length} events for sheet: ${sheetName}`);
+      console.log(`Fetched ${data.length} events for sheet: ${sheet.name}`);
       return data;
     } catch (error) {
       console.error('Error fetching sheet data:', error);
@@ -117,11 +118,13 @@ const EventScheduleView = () => {
       const allData: SheetData = {};
       
       for (const sheet of sheets) {
-        const data = await fetchSheetData(sheet.name);
+        const data = await fetchSheetData(sheet);
         allData[sheet.name] = data;
       }
       
       setScheduleData(allData);
+      localStorage.setItem('eventSchedule_data', JSON.stringify(allData));
+      localStorage.setItem('eventSchedule_hasLoaded', 'true');
       console.log('All sheet data loaded:', allData);
     } catch (error) {
       console.error('Error loading sheet data:', error);
@@ -152,7 +155,13 @@ const EventScheduleView = () => {
     localStorage.setItem('eventSchedule_showAllEvents', showAllEvents.toString());
   }, [showAllEvents]);
 
-  // Removed auto-loading on mount - only load via manual refresh button
+  // Auto-load only on first visit
+  useEffect(() => {
+    const hasLoaded = localStorage.getItem('eventSchedule_hasLoaded');
+    if (!hasLoaded && Object.keys(scheduleData).length === 0) {
+      loadAllSheetData();
+    }
+  }, []);
 
   const getCurrentSheet = () => {
     const targetDateStr = selectedDate;
