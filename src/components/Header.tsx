@@ -21,7 +21,7 @@ const Header = () => {
         <div className="flex items-center space-x-3">
           <div className="bg-white/10 p-2 rounded-lg">
             <img 
-              src="/lovable-uploads/b207cc73-0425-49e9-9a42-ff0709f466c8.png" 
+              src="/sro-logo.png" 
               alt="SRO Tech Logo" 
               className="h-6 w-6 object-contain"
             />

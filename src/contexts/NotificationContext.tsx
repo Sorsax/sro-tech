@@ -36,7 +36,7 @@ export const useNotifications = () => {
 };
 
 export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { t, userName, language } = useSettings();
+  const { t, userName, language, notificationsEnabled } = useSettings();
   const { toast } = useToast();
   
   const [notifications, setNotifications] = useState<Notification[]>(() => {
@@ -164,7 +164,8 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
   };
 
   const scheduleEventReminders = (events: any[]) => {
-    if (!notificationSettings.eventReminders) return;
+    // Check global notifications enabled setting first
+    if (!notificationsEnabled || !notificationSettings.eventReminders) return;
 
     const now = new Date();
     const scheduledNotifications: any[] = [];
@@ -305,6 +306,9 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
 
   // Function to handle background check and send notification
   const handleBackgroundCheck = async (eventDate: string, eventName: string, scheduledNotificationTime: string) => {
+    // Check global notifications enabled setting first
+    if (!notificationsEnabled) return;
+    
     try {
       console.log('Performing background check for event:', eventName, eventDate);
       

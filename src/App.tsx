@@ -20,19 +20,9 @@ const App = () => {
       // Do nothing - this prevents system preference from affecting app
     };
     mediaQuery.addEventListener('change', handleChange);
-    
-    // Remove badge
-    const interval = setInterval(() => {
-      const badge = document.querySelector('#lovable-badge-close');
-      if (badge?.parentElement) {
-        badge.parentElement.remove();
-        clearInterval(interval);
-      }
-    }, 300);
 
     return () => {
       mediaQuery.removeEventListener('change', handleChange);
-      clearInterval(interval);
     };
   }, []);
 
