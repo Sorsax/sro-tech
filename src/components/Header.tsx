@@ -16,7 +16,8 @@ const Header = () => {
   const initials = userName ? userName.charAt(0).toUpperCase() : "S";
 
   return (
-    <header className="bg-sro-olive dark:bg-sro-olive text-white px-4 py-3 shadow-md sticky top-[env(safe-area-inset-top)] z-10">
+    <header className="bg-sro-olive dark:bg-sro-olive text-white px-4 py-3 shadow-md sticky top-0 z-10">
+      <div className="h-2 bg-sro-olive"></div> {/* Reduce the height of the extra rows */}
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-3">
           <div className="bg-white/10 p-2 rounded-lg">

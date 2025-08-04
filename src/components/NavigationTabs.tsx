@@ -17,7 +17,7 @@ const NavigationTabs = ({ activeTab, onTabChange }: NavigationTabsProps) => {
   ];
 
   return (
-    <nav className="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 px-4 py-2 shadow-lg">
+    <nav className="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 px-4 py-2 shadow-lg fixed bottom-0 w-full">
       <div className="grid grid-cols-4 gap-4">
         {tabs.map((tab) => {
           const Icon = tab.icon;
