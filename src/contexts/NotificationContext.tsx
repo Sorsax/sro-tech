@@ -1,5 +1,4 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { PushNotifications } from '@capacitor/push-notifications';
 import { LocalNotifications } from '@capacitor/local-notifications';
 import { Capacitor } from '@capacitor/core';
 import { useSettings } from './SettingsContext';
@@ -86,20 +85,7 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
   const initializeNotifications = async () => {
     if (Capacitor.isNativePlatform()) {
       // Request permissions
-      await PushNotifications.requestPermissions();
       await LocalNotifications.requestPermissions();
-
-      // Register for push notifications
-      await PushNotifications.register();
-
-      // Listen for notifications
-      PushNotifications.addListener('pushNotificationReceived', (notification) => {
-        addNotification({
-          title: notification.title || '',
-          message: notification.body || '',
-          type: 'event_reminder'
-        });
-      });
 
       LocalNotifications.addListener('localNotificationReceived', (notification) => {
         addNotification({
