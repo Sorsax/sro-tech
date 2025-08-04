@@ -70,7 +70,7 @@ export const translations = {
     participationReminderMessage: "Muistutus: Olet ilmoittautunut tapahtumaan '{event}' huomenna ({date})",
     
     // Event Schedule
-    eventSchedule: "Tapahtumaohjelma",
+    eventSchedule: "Ohjelma",
     selectEvent: "Valitse tapahtuma",
     selectDate: "Valitse päivämäärä",
     selectArena: "Valitse areena",

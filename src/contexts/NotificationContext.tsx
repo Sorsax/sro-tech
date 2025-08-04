@@ -125,10 +125,12 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
     }));
   };
 
+  const generateNotificationId = () => Math.floor(Date.now() % 1000000); // Generate smaller IDs within valid range
+
   const addNotification = (notification: Omit<Notification, 'id' | 'timestamp' | 'read'>) => {
     const newNotification: Notification = {
       ...notification,
-      id: Date.now().toString(),
+      id: generateNotificationId(),
       timestamp: new Date(),
       read: false
     };
@@ -348,7 +350,7 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
         notificationToSend = {
           title: t('eventReminderTitle'),
           body: t('eventReminderMessage').replace('{event}', event.event).replace('{date}', event.date),
-          id: parseInt(`${Date.now()}${Math.random() * 1000}`),
+          id: generateNotificationId(),
           schedule: { at: new Date(scheduledNotificationTime) }
         };
       } else if ((userInVolunteers || userOptedIn) && notificationSettings.participationReminders) {
@@ -356,7 +358,7 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
         notificationToSend = {
           title: t('participationReminderTitle'),
           body: t('participationReminderMessage').replace('{event}', event.event).replace('{date}', event.date),
-          id: parseInt(`${Date.now()}${Math.random() * 1000}`),
+          id: generateNotificationId(),
           schedule: { at: new Date(scheduledNotificationTime) }
         };
       }
@@ -420,7 +422,7 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
             {
               title: 'Standby Test Notification',
               body: 'This notification was sent after 1 minute to test if notifications work when the device is on standby.',
-              id: Date.now(),
+              id: generateNotificationId(),
               schedule: { at: scheduleTime },
               sound: 'default',
               attachments: [],

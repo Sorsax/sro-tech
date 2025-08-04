@@ -1,4 +1,3 @@
-
 import { Calendar, Settings, Users, Clock } from 'lucide-react';
 import { useSettings } from '@/contexts/SettingsContext';
 
@@ -19,11 +18,11 @@ const NavigationTabs = ({ activeTab, onTabChange }: NavigationTabsProps) => {
 
   return (
     <nav className="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 px-4 py-2 shadow-lg">
-      <div className="flex justify-around">
+      <div className="grid grid-cols-4 gap-4">
         {tabs.map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
-          
+
           return (
             <button
               key={tab.id}
