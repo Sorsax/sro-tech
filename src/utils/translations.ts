@@ -73,7 +73,7 @@ export const translations = {
     eventSchedule: "Ohjelma",
     selectEvent: "Valitse tapahtuma",
     selectDate: "Valitse päivämäärä",
-    selectArena: "Valitse areena",
+    selectArena: "Valitse sijainti",
     showAllEvents: "Näytä kaikki tapahtumat",
     showNextOnly: "Näytä vain seuraava",
     noEventsForDate: "Ei tapahtumia tälle päivälle",
