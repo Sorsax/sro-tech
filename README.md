@@ -1,22 +1,19 @@
 # SRO Tech
 
-SRO Tech on opiston tekniikkaväen tukena toimiva mobiilisovellus. Se pitää kaiken hyödyllisen tiedon (epä)kätevästi aina mukana kännykässä - ei tarvitse louhia kalenteria ja Sheetsiä yhtä aikaa.
+SRO Tech on opiston tekniikkaväen (lähinnä mun) tukena toimiva mobiilisovellus. Se pitää kaiken hyödyllisen tiedon (epä)kätevästi aina mukana kännykässä - ei tarvitse louhia Sheetsiä kun voi vaan odottaa 20 sekuntia että app script käynnistyy.
 
 ## Projektin yleiskuvaus
 
-Tiedot haetaan suoraan Google Sheetsistä. Sheetsin kanssa *saattaa* tulla CORS-ongelmia (kyllä, tiedot haetaan HTTP GET-pyynnöillä :DD), sheetdb meinaan sallii vaan 500 pyyntöä kuussa ilmaisella joten ne säästetään ilmoittautumisille.
-Tähän väliin huomautankin että sheetdb on ohi ja nykyään tiedot menee POSTina Json muodossa Google App scriptiin joka pyrkii parhaansa mukaan lisäämään ne sheetsiin.
+Tiedot haetaan suoraan Google Sheetsistä. Sheetsin kanssa *saattaa* tulla CORS-ongelmia (kyllä, tiedot haetaan HTTP GET-pyynnöillä :DD), ilmoittautumiset lähetetään Google App Scriptiin joka lisää nimen ja solun nykyisen arvon siististi pilkulla eroteltuna taulukkoon, joskus jopa oikeaan soluun.
 
 Iljapuolella käytössä ovat:
 
-- React ja TypeScript, koska koodissa pitää olla selkeys ja tyyli kohdillaan :P
-- shadcn/ui ja Tailwind CSS, koska eihän normaali CSS ole riittävä
-- Vite korvaa kaiken buildaustyön
+- React ja TypeScript
+- shadcn/ui ja Tailwind CSS
+- Vite
+- Joku versio käytti React Nativea mutta ei enää
 
 ## Sovelluksen ulkoasu
-
-Typography,
-vaikka eihän se esittelyä kaipaisi:
 
 - Otsikoissa Bree Serif – tuttuun tapaan
 - Muussa tekstissä Open Sans
@@ -39,9 +36,6 @@ Kyhäelmä lukee taulukosta, jonka rakenne on seuraava:
 | C      | Ilmoittautuneet vapaaehtoiset |
 | D      | Varahenkilö                    |
 | E      | Lisätiedot                     |
-
-Linkki taulukkoon:  
-https://docs.google.com/spreadsheets/d/1iZfopLSu7IxqF-15TYT21xEfvX_Q1-Z1OX8kzagGrDg
 
 ## Oman elämänsä webbiwelhoille:
 
