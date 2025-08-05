@@ -118,14 +118,13 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
       });
     }
 
-    // Update settings to mark welcome as shown
     setNotificationSettings(prev => ({
       ...prev,
       welcomeShown: true
     }));
   };
 
-  const generateNotificationId = () => Math.floor(Date.now() % 1000000); // Generate smaller IDs within valid range
+  const generateNotificationId = () => Math.floor(Date.now() % 1000000); 
 
   const addNotification = (notification: Omit<Notification, 'id' | 'timestamp' | 'read'>) => {
     const newNotification: Notification = {
@@ -137,7 +136,6 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
 
     setNotifications(prev => [newNotification, ...prev]);
     
-    // Show toast for new notifications
     toast({
       title: notification.title,
       description: notification.message,

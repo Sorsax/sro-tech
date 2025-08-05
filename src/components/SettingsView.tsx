@@ -1,4 +1,3 @@
-
 import { Settings, Moon, Sun, Languages, Link, Bell, Bug, TestTube, Eye, Trash2 } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
@@ -404,6 +403,11 @@ const SettingsView = () => {
             )}
           </div>
         </div>
+      </div>
+
+      <div className="text-center mt-6 text-sm text-gray-500 dark:text-gray-400">
+        <p>b.1.0.3</p>
+        <p>&copy; Niilo Liesivesi 2025</p>
       </div>
     </div>
   );
