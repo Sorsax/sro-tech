@@ -1,6 +1,6 @@
 # SRO Tech
 
-SRO Tech on opiston tekniikkaväen (lähinnä mun) tukena toimiva mobiilisovellus. Se pitää kaiken hyödyllisen tiedon (epä)kätevästi aina mukana kännykässä - ei tarvitse louhia Sheetsiä kun voi vaan odottaa 20 sekuntia että app script käynnistyy.
+SRO Tech on opiston tekniikkaväen (lähinnä mun) tukena toimiva mobiilisovellus. Se pitää kaiken hyödyllisen tiedon (epä)kätevästi aina mukana kännykässä - ei tarvii louhia Sheetsiä kun voi vaan odottaa 20 sekuntia että app script käynnistyy.
 
 ## Projektin yleiskuvaus
 
@@ -12,6 +12,8 @@ Iljapuolella käytössä ovat:
 - shadcn/ui ja Tailwind CSS
 - Vite
 - Joku versio käytti React Nativea mutta ei enää
+
+PS: Kiitti oikeest et lovable näkyy contributorina (tein alkukonffapohjat siltä)
 
 ## Sovelluksen ulkoasu
 
