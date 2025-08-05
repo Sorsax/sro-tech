@@ -29,7 +29,7 @@ export const translations = {
     namePlaceholder: "Syötä nimesi",
     
     // Event Card
-    backup: "Varahenkilö",
+    backup: "Varalla",
     notes: "Lisätiedot",
     optInButton: "Ilmoittaudu vapaaehtoiseksi",
     optingIn: "Ilmoittaudutaan...",

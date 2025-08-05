@@ -36,7 +36,7 @@ Kyhäelmä lukee taulukosta, jonka rakenne on seuraava:
 | A      | Päivämäärä (pp/kk/vvvv)       |
 | B      | Tapahtuma ja tehtävä           |
 | C      | Ilmoittautuneet vapaaehtoiset |
-| D      | Varahenkilö                    |
+| D      | Varalla                         |
 | E      | Lisätiedot                     |
 
 ## Oman elämänsä webbiwelhoille:
