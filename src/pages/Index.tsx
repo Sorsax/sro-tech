@@ -11,12 +11,10 @@ const Index = () => {
   const [activeTab, setActiveTab] = useState('schedule');
   const [mounted, setMounted] = useState(false);
 
-  // Ensure app starts with clean state regardless of device preferences
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  // Don't render until mounted to prevent flicker
   if (!mounted) {
     return null;
   }
