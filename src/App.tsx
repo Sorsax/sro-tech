@@ -15,8 +15,7 @@ const queryClient = new QueryClient();
 
 const App = () => {
   useEffect(() => {
-    // 👇 Piilota status bar
-    StatusBar.hide();
+    StatusBar.hide(); true
 
     // Remove system preference for dark mode
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
