@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { useSettings } from '@/contexts/SettingsContext';
 import { useNotifications } from '@/contexts/NotificationContext';
 import { useState } from 'react';
+import { Http } from '@capacitor-community/http';
 import { useToast } from '@/components/ui/use-toast';
 
 interface EventCardProps {
@@ -95,16 +96,28 @@ const EventCard = ({ date, event, volunteers, backup, notes, index, onOptInSucce
 
       console.log('Sending payload:', JSON.stringify(payload));
 
-      const response = await fetch(webhookUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
 
-      console.log('Response status:', response.status);
+      // Use Capacitor HTTP to bypass CORS in native apps
+      let responseStatus = 0;
+      let responseOk = false;
+      try {
+        const httpResponse = await Http.request({
+          method: 'POST',
+          url: webhookUrl,
+          headers: { 'Content-Type': 'application/json' },
+          data: payload,
+          params: {}, // <-- Add this line
+        });
+        responseStatus = httpResponse.status;
+        responseOk = httpResponse.status >= 200 && httpResponse.status < 300;
+        console.log('Capacitor HTTP response:', httpResponse);
+      } catch (httpError) {
+        console.error('Capacitor HTTP error:', httpError);
+        throw new Error(`HTTP error! ${httpError.message || httpError}`);
+      }
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+      if (!responseOk) {
+        throw new Error(`HTTP error! status: ${responseStatus}`);
       }
 
       toast({
