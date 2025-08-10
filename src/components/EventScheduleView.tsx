@@ -39,6 +39,9 @@ const EventScheduleView = () => {
   const SHEET_ID = '14yS8Bce2T06AQQCi2tGVxCNZA8eZpvGM';
   
   const sheets = [
+    { name: 'MA 11.8', gid: '1955664783', date: '2025-08-11', label: t('monday') + ' 11.8', startRow: 6 },
+    { name: 'TI 12.8', gid: '571236470', date: '2025-08-12', label: t('tuesday') + ' 12.8', startRow: 6 },
+    { name: 'KE 13.8', gid: '438081763', date: '2025-08-13', label: t('wednesday') + ' 13.8', startRow: 6 },
     { name: 'PE 15.8', gid: '1894656914', date: '2025-08-15', label: t('friday') + ' 15.8', startRow: 6 },
     { name: 'LA 16.8 Sibelius-sali', gid: '204838078', date: '2025-08-16', label: t('saturday') + ' 16.8 - Sibelius', arena: 'Sibelius-sali', startRow: 5 },
     { name: 'LA 16.8 Aho-sali', gid: '493893366', date: '2025-08-16', label: t('saturday') + ' 16.8 - Aho', arena: 'Aho-sali', startRow: 5 },
@@ -163,10 +166,18 @@ const EventScheduleView = () => {
 
   const getCurrentSheet = () => {
     const targetDateStr = selectedDate;
-    
     console.log('getCurrentSheet - selectedDate:', selectedDate, 'targetDateStr:', targetDateStr, 'selectedArena:', selectedArena);
-    
-    if (targetDateStr === '2025-08-15') {
+
+    if (targetDateStr === '2025-08-11') {
+      console.log('Returning MA 11.8 sheet');
+      return sheets.find(s => s.name === 'MA 11.8');
+    } else if (targetDateStr === '2025-08-12') {
+      console.log('Returning TI 12.8 sheet');
+      return sheets.find(s => s.name === 'TI 12.8');
+    } else if (targetDateStr === '2025-08-13') {
+      console.log('Returning KE 13.8 sheet');
+      return sheets.find(s => s.name === 'KE 13.8');
+    } else if (targetDateStr === '2025-08-15') {
       console.log('Returning PE 15.8 sheet');
       return sheets.find(s => s.name === 'PE 15.8');
     } else if (targetDateStr === '2025-08-16') {
@@ -182,7 +193,7 @@ const EventScheduleView = () => {
       console.log('Returning SU 17.8 sheet');
       return sheets.find(s => s.name === 'SU 17.8');
     }
-    
+
     console.log('No sheet found for date:', targetDateStr);
     return sheets.find(s => s.name === 'PE 15.8'); // Default to Friday
   };
@@ -259,7 +270,14 @@ const EventScheduleView = () => {
     return { current: currentEvent, next: nextEvent, upcoming: upcomingEvents };
   };
 
-  const availableDates = ['2025-08-15', '2025-08-16', '2025-08-17'];
+  const availableDates = [
+    '2025-08-11', // Monday
+    '2025-08-12', // Tuesday
+    '2025-08-13', // Wednesday
+    '2025-08-15', // Friday
+    '2025-08-16', // Saturday
+    '2025-08-17', // Sunday
+  ];
 
   if (loading) {
     return (
